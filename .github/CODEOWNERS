@@ -1,0 +1,24 @@
+# ==============================================================================
+# DETRAN-SP (DTI) — Governança de Aprovação Cloud & FinOps (CODEOWNERS)
+# ==============================================================================
+# Define os aprovadores obrigatórios para mudanças de governança, pipelines
+# OIDC/WIF, scripts de provisionamento e requisições de deploy em
+# cloud-provisioning-approvals.
+#
+# Para adicionar novos aprovadores da DTI (Arquitetura, Segurança, FinOps),
+# basta acrescentar os handles do GitHub ao lado de @ernani nas regras abaixo:
+# Exemplo: /requests/ @ernani @lucas-dti @time-arquitetura-detran
+# ==============================================================================
+
+# Regra Global Padrão (Fallback para qualquer arquivo do repositório)
+*                                         @ernani
+
+# Esteira OIDC/WIF e Workflows do GitHub Actions (Crítico - Segurança Cloud)
+/.github/workflows/                       @ernani
+/.github/CODEOWNERS                       @ernani
+
+# Scripts de Provisionamento Terraform, Reconciliação GCLB/DB e Teardown FinOps
+/scripts/                                 @ernani
+
+# Requisições de Provisionamento de Workloads (PRs gerados pelo Agente ADK)
+/requests/                                @ernani

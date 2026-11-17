@@ -1,0 +1,109 @@
+name: TTL & Budget Workload Auto-Teardown (Workload-Only Destroy)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "teardown-triggers/**"
+  workflow_dispatch:
+    inputs:
+      workload_slug:
+        description: "Slug opcional da aplicação a descomissionar (vazio = varre todas vencidas)"
+        required: false
+        default: ""
+        type: string
+      reason:
+        description: "Motivo auditável do descomissionamento"
+        required: false
+        default: "TTL_EXPIRED_15M"
+        type: string
+      force_now:
+        description: "Forçar terraform destroy imediato desta aplicação mesmo antes do horário de expiração"
+        required: false
+        default: "false"
+        type: string
+
+permissions:
+  contents: write
+  id-token: write
+
+concurrency:
+  group: ttl-teardown-detran-gemini
+  cancel-in-progress: false
+
+jobs:
+  teardown-expired-workloads:
+    name: Destroy Expired Workloads Only (Preserve Project & Git)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+
+      - name: Check if any active lease requires teardown
+        id: check
+        env:
+          TARGET_SLUG: ${{ github.event.inputs.workload_slug || '' }}
+          FORCE_NOW: ${{ github.event.inputs.force_now || 'false' }}
+        run: |
+          python3 - <<'PY' >> "$GITHUB_OUTPUT"
+          import datetime, glob, json, os
+          now_epoch = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
+          target = os.environ.get("TARGET_SLUG", "").strip()
+          force = os.environ.get("FORCE_NOW", "false").strip().lower() == "true"
+          needs_run = False
+          for p in glob.glob("active-leases/*.json"):
+              d = json.load(open(p, encoding="utf-8"))
+              if str(d.get("status", "")).upper() != "ACTIVE":
+                  continue
+              slug = str(d.get("workload_slug", ""))
+              if target and slug != target:
+                  continue
+              exp = int(d.get("expires_at_epoch", 0))
+              spend = float(d.get("simulated_spend_brl", 0.0) or 0.0)
+              budget = float(d.get("budget_brl", 0.0) or 0.0)
+              if (force and target == slug) or (budget > 0 and spend >= budget) or (exp > 0 and now_epoch >= exp):
+                  needs_run = True
+                  break
+          print(f"needs_teardown={'true' if needs_run else 'false'}")
+          PY
+
+      - name: Authenticate to Google Cloud (detran-gemini) via Keyless OIDC WIF
+        if: steps.check.outputs.needs_teardown == 'true'
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: "projects/881857743262/locations/global/workloadIdentityPools/github-approvals-pool/providers/github-oidc-approvals"
+          service_account: "detran-workload-provisioner-sa@detran-gemini.iam.gserviceaccount.com"
+
+      - name: Set up Google Cloud SDK
+        if: steps.check.outputs.needs_teardown == 'true'
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Set up Terraform
+        if: steps.check.outputs.needs_teardown == 'true'
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+          terraform_wrapper: false
+
+      - name: Execute Workload-Scoped Terraform Destroy
+        id: destroy
+        if: steps.check.outputs.needs_teardown == 'true'
+        run: |
+          python3 scripts/teardown_expired_workloads.py \
+            --workload-slug "${{ github.event.inputs.workload_slug || '' }}" \
+            --reason "${{ github.event.inputs.reason || 'TTL_EXPIRED_15M' }}" \
+            --force-now "${{ github.event.inputs.force_now || 'false' }}" \
+            --github-output "$GITHUB_OUTPUT"
+
+      - name: Commit Decommission Audit Trail to main
+        if: steps.check.outputs.needs_teardown == 'true' && steps.destroy.outputs.destroyed_count != '0'
+        run: |
+          git config user.name "detran-ttl-guardian-bot"
+          git config user.email "114523+ernani@users.noreply.github.com"
+          git rm -rf --ignore-unmatch teardown-triggers/ || true
+          git add -A active-leases/
+          if ! git diff --cached --quiet; then
+            git commit -m "chore(ttl-teardown): destroy expired workloads (${{ steps.destroy.outputs.destroyed_slugs }}) [skip ci]"
+            git pull --rebase origin main
+            git push origin main
+          fi
