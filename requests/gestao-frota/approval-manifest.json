@@ -1,0 +1,135 @@
+{
+  "schema_version": "1.3.0",
+  "workload_slug": "gestao-frota",
+  "request_type": "brownfield_repo_review",
+  "github_org": "detran-automation-dev",
+  "solution_repo": "zip-detran-dti-hive-gestao-frota",
+  "git_branch": "gcp/sandbox",
+  "git_tag": "GCP_DEPLOYED_VERSION",
+  "expected_commit_sha": "c33af11a26121e2d8757df430986cd0edc9d0cb2",
+  "source_commit_sha": "c33af11a26121e2d8757df430986cd0edc9d0cb2",
+  "commits_ahead_of_main": 1,
+  "commits_behind_main": 0,
+  "compare_against_main_url": "https://github.com/detran-automation-dev/zip-detran-dti-hive-gestao-frota/compare/main...GCP_DEPLOYED_VERSION",
+  "target_gcp_project": "detran-gemini",
+  "region": "southamerica-east1",
+  "provisioner_service_account": "detran-workload-provisioner-sa@detran-gemini.iam.gserviceaccount.com",
+  "budget_brl": 200.0,
+  "ttl": "15m",
+  "ttl_minutes": 15,
+  "gclb_nip_io_edge_contract": {
+    "project_prefix": "gestao-frota",
+    "gclb_load_balancing_scheme": "EXTERNAL_MANAGED",
+    "http_to_https_redirect": "301 MOVED_PERMANENTLY_DEFAULT (Port 80 -> Port 443)",
+    "ssl_certificate_strategy": "Google Certificate Manager (Load Balancer Authorization) para os 3 subdomínios .nip.io + Certificado Bootstrap TLS Primary Fallback (zero reset de handshake durante PROVISIONING)",
+    "domains": {
+      "frontend": "https://gestao-frota-frontend.<gclb_ip>.nip.io",
+      "backend_bff": "https://gestao-frota-backend.<gclb_ip>.nip.io",
+      "api": "https://gestao-frota-api.<gclb_ip>.nip.io"
+    },
+    "tier_backends": {
+      "frontend_spa": {
+        "mode": "STATIC_SPA_GCS_BACKEND_BUCKET_NO_CONTAINER",
+        "gcs_bucket": "detran-spa-gestao-frota-881857743262",
+        "website_support": {
+          "main_page_suffix": "index.html",
+          "not_found_page": "index.html"
+        },
+        "backend_bucket": "gestao-frota-spa-be",
+        "cloud_cdn_enabled": true,
+        "same_origin_api_l7_route": "/api/* -> BackendService BFF/API no URL Map do GCLB"
+      },
+      "backend_bff": {
+        "mode": "ROUTED_TO_API_CLOUD_RUN_V2_BACKEND_SERVICE",
+        "service_name": "gestao-frota-api",
+        "backend_service": "gestao-frota-api-be",
+        "ingress": "INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER",
+        "cloud_armor_waf": "gestao-frota-waf"
+      },
+      "api": {
+        "mode": "CLOUD_RUN_V2_SERVICE",
+        "service_name": "gestao-frota-api",
+        "backend_service": "gestao-frota-api-be",
+        "ingress": "INGRESS_TRAFFIC_INTERNAL_LOAD_BALANCER",
+        "cloud_armor_waf": "gestao-frota-waf"
+      },
+      "serverless_functions_v2": {
+        "enabled": true,
+        "function_name": "gestao-frota-fn",
+        "runtime": "Cloud Run Functions v2 (GEN_2 + Eventarc Pub/Sub & GCS Object Finalize)",
+        "monitored_uploads_bucket": "detran-uploads-gestao-frota-881857743262",
+        "monitored_prefix": "incoming/"
+      },
+      "app_storage_uploads": {
+        "gcs_bucket": "detran-uploads-gestao-frota-881857743262",
+        "access_mode": "PRIVATE (public_access_prevention = enforced, UBLA = true)",
+        "upload_patterns": [
+          "V4 Signed URLs (PUT/GET 15m via IAM signBlob sem chave JSON)",
+          "Cloud Run v2 Native GCS FUSE Volume Mount (/mnt/uploads) para apps legadas"
+        ],
+        "file_watch_trigger": "OBJECT_FINALIZE (prefix 'incoming/') -> Pub/Sub 'gestao-frota-events' (+ DLQ 'gestao-frota-dlq') -> Cloud Run Function v2 'gestao-frota-fn'"
+      },
+      "pubsub_isolated_topics": [
+        "gestao-frota-events",
+        "gestao-frota-dlq"
+      ],
+      "gke_future_roadmap": {
+        "enabled_now": false,
+        "cluster_name": "detran-shared-gke-autopilot",
+        "mode": "GKE Autopilot Shared Cluster + ComputeClass / Taint Node Isolation per Project",
+        "anti_drift_maintenance": "Release Channel REGULAR + Recurring Maintenance Window (Ter-Qui 02:00-06:00 BRT)"
+      }
+    }
+  },
+  "database_type": "postgresql",
+  "shared_sql_instance": "detran-shared-pgsql",
+  "volumetric_sql_sizing": {
+    "expected_concurrent_apps": 3,
+    "tier": "db-custom-2-7680",
+    "vcpu": 2,
+    "memory_mb": 7680,
+    "memory_gb": 7.5,
+    "disk_size_gb": 20,
+    "max_connections": 300
+  },
+  "enable_redis": false,
+  "shared_redis_isolation": null,
+  "shared_backing_discovery": {
+    "sql_instance_name": "detran-shared-pgsql",
+    "sql_already_exists": null,
+    "sql_state": "UNKNOWN_OFFLINE",
+    "sql_reconciliation_action": "DYNAMIC_CHECK_AND_IMPORT_AT_APPLY_TIME",
+    "redis_instance_name": "",
+    "redis_already_exists": null,
+    "redis_state": "NOT_REQUESTED"
+  },
+  "finops_rateio_contract": {
+    "policy": "SINGLETON_ENGINE_PER_PROJECT_WITH_PROPORTIONAL_RATEIO",
+    "database_type": "postgresql",
+    "shared_sql_instance": "detran-shared-pgsql",
+    "dedicated_logical_database": "db_gestao_frota",
+    "formula": "Custo_App_i = (Custo_Servidor_CPU_RAM * Compute_Share_i) + (Custo_Disco_IOPS * Storage_Share_i)",
+    "telemetry_sources": "pg_stat_database (xact_commit, tup_returned, tup_fetched, tup_inserted, tup_updated, blks_read) + pg_database_size('db_<slug>') + Cloud SQL Query Insights (application_name='<slug>')",
+    "audit_rateio_sql": "SELECT d.datname AS database_name, pg_database_size(d.datname) AS storage_bytes, ROUND(100.0 * pg_database_size(d.datname) / NULLIF(SUM(pg_database_size(d.datname)) OVER (), 0), 2) AS storage_share_pct, (s.xact_commit + s.xact_rollback + s.tup_returned + s.tup_fetched + s.tup_inserted + s.tup_updated + s.blks_read) AS activity_units, ROUND(100.0 * (s.xact_commit + s.xact_rollback + s.tup_returned + s.tup_fetched + s.tup_inserted + s.tup_updated + s.blks_read) / NULLIF(SUM(s.xact_commit + s.xact_rollback + s.tup_returned + s.tup_fetched + s.tup_inserted + s.tup_updated + s.blks_read) OVER (), 0), 2) AS compute_share_pct FROM pg_database d JOIN pg_stat_database s ON d.oid = s.datid WHERE d.datname LIKE 'db_%' ORDER BY storage_bytes DESC;",
+    "redis_sharing": null
+  },
+  "observability_sre": {
+    "alert_emails": [
+      "ernanimartins@google.com"
+    ],
+    "slo_availability_goal": 0.995,
+    "slo_latency_p95_ms": 1500,
+    "dashboard_provisioned_by_terraform": true,
+    "alerts_provisioned_by_terraform": [
+      "http_5xx_error_spike",
+      "high_p95_latency",
+      "shared_db_cpu_saturation"
+    ]
+  },
+  "teardown_mode": "terraform_destroy_workload_only",
+  "sarif_security_verdict": "PASS",
+  "approval_status": "APPROVED_ON_MERGE",
+  "requested_by": "arquiteto.dti@detran.sp.gov.br",
+  "requested_at_utc": "2026-11-17T21:00:50Z",
+  "business_justification": "Modernização do sistema de Gestão de Frotas DTI para ambiente governado detran-gemini com GCLB HTTPS, SPA estático em GCS, Cloud Run v2 e banco compartilhado PostgreSQL"
+}
