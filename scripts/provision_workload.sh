@@ -41,10 +41,16 @@ AR_REPO="${REGION}-docker.pkg.dev/${TARGET_GCP_PROJECT}/detran-sandbox-workloads
 SHORT_SHA="${EXPECTED_COMMIT_SHA:0:8}"
 APPROVALS_ROOT="$(pwd)"
 
-echo "=== [1/7] Fetching ephemeral GitHub token from Secret Manager (${TARGET_GCP_PROJECT}) ==="
+echo "=== [1/7] Fetching ephemeral GitHub token & Verifying Cryptographic HMAC-SHA256 Manifest Seal ==="
 GH_PAT="$(gcloud secrets versions access latest --secret=detran-github-org-pat --project="${TARGET_GCP_PROJECT}")"
 echo "::add-mask::${GH_PAT}"
 AUTH_B64="$(printf 'x-access-token:%s' "${GH_PAT}" | base64 -w 0)"
+export MANIFEST_HMAC_SECRET="${GH_PAT}"
+if [[ -f "${APPROVALS_ROOT}/requests/${WORKLOAD_SLUG}/approval-manifest.json" ]]; then
+  python3 "${APPROVALS_ROOT}/scripts/enforce_provisioning_policy.py" \
+    --mode pre-deploy \
+    --manifest "${APPROVALS_ROOT}/requests/${WORKLOAD_SLUG}/approval-manifest.json"
+fi
 
 SRC_DIR="$(mktemp -d /tmp/solution-src-XXXXXX)"
 SPA_EXTRACT_DIR="$(mktemp -d /tmp/spa-extract-XXXXXX)"
@@ -81,12 +87,15 @@ if [[ ! -d "${SRC_DIR}/infra/terraform" ]]; then
   exit 1
 fi
 
-echo "=== [2.5/7] Enforcing Mandatory SARIF v2.1.0 Gatekeeper Report on ${GIT_TAG} ==="
+echo "=== [2.5/7] Enforcing Mandatory OSS SARIF v2.1.0 Gatekeeper & Tree Digest on ${GIT_TAG} ==="
 if [[ ! -f "${SRC_DIR}/security/sarif-audit-report.sarif.json" ]]; then
   echo "ERRO FATAL DE SEGURANCA (SARIF GATE): O relatorio 'security/sarif-audit-report.sarif.json' nao existe na branch/tag '${GIT_TAG}' de ${SOLUTION_REPO}! Deploy bloqueado!" >&2
   exit 1
 fi
-python3 - "${SRC_DIR}/security/sarif-audit-report.sarif.json" <<'PY'
+if [[ -f "${SRC_DIR}/security/run_oss_sarif_scanners.py" ]]; then
+  python3 "${SRC_DIR}/security/run_oss_sarif_scanners.py" --root "${SRC_DIR}" --verify
+else
+  python3 - "${SRC_DIR}/security/sarif-audit-report.sarif.json" <<'PY'
 import json, pathlib, sys
 sarif = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
 if sarif.get("version") != "2.1.0":
@@ -100,6 +109,7 @@ if blocking:
     raise SystemExit(f"BLOQUEIO SARIF: {len(blocking)} vulnerabilidade(s) critica(s) na tag!")
 print("[SARIF-GATE] Relatorio SARIF v2.1.0 validado na branch gcp/sandbox (0 vulnerabilidades bloqueantes).")
 PY
+fi
 
 echo "=== [3/7] Building Backend/API Container(s) & Static SPA GCS Bundle in Cloud Build ==="
 API_IMAGE="${AR_REPO}/${WORKLOAD_SLUG}-api:${SHORT_SHA}"

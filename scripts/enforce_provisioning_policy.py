@@ -13,7 +13,10 @@ from __future__ import annotations
 
 import argparse
 import datetime
+import hashlib
+import hmac
 import json
+import os
 import pathlib
 import re
 import sys
@@ -193,6 +196,49 @@ def validate_manifest(manifest_path: pathlib.Path, policy: dict[str, Any]) -> di
     approval_status = str(data.get("approval_status", "")).strip().upper()
     if approval_status not in {"PENDING_APPROVAL", "APPROVED_ON_MERGE", "APPROVED", "REJECTED"}:
         errors.append(f"approval_status inválido '{approval_status}'.")
+
+    seal = data.get("integrity_seal")
+    if not isinstance(seal, dict):
+        errors.append("VIOLAÇÃO DE INTEGRIDADE (ANTI-DRIFT): Bloco obrigatório 'integrity_seal' ausente em approval-manifest.json (o arquivo deve ser gerado exclusivamente pelo Agente ADK).")
+    else:
+        seal_fields = seal.get("canonical_fields") or [
+            "schema_version", "workload_slug", "request_type", "github_org", "solution_repo",
+            "git_branch", "git_tag", "expected_commit_sha", "target_gcp_project", "region",
+            "provisioner_service_account", "budget_brl", "ttl", "ttl_minutes", "database_type",
+            "enable_redis", "observability_sre", "teardown_mode", "sarif_security_verdict",
+        ]
+        canonical_payload = json.dumps(
+            {k: data.get(k) for k in seal_fields},
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+        )
+        computed_canonical_sha = hashlib.sha256(canonical_payload.encode("utf-8")).hexdigest()
+        if computed_canonical_sha != seal.get("canonical_payload_sha256"):
+            errors.append(
+                f"VIOLAÇÃO DE INTEGRIDADE (ANTI-DRIFT): Os parâmetros de governança em approval-manifest.json (sha256={computed_canonical_sha[:12]}) divergem do selo original do Agente ({str(seal.get('canonical_payload_sha256'))[:12]})! Edição manual fora do Agente bloqueada."
+            )
+        comp_doc_name = "PRD.md" if request_type == "greenfield_new_project" else "ARCHITECTURE_REVIEW.md"
+        comp_doc = req_dir / comp_doc_name
+        if comp_doc.is_file() and approval_doc.is_file():
+            computed_docs_sha = hashlib.sha256(
+                (comp_doc.read_text(encoding="utf-8").strip() + "\n---\n" + approval_doc.read_text(encoding="utf-8").strip()).encode("utf-8")
+            ).hexdigest()
+            if seal.get("companion_docs_sha256") and computed_docs_sha != seal.get("companion_docs_sha256"):
+                errors.append(
+                    "VIOLAÇÃO DE INTEGRIDADE (ANTI-DRIFT): Os documentos APPROVAL_REQUEST.md / ARCHITECTURE_REVIEW.md foram modificados manualmente após a emissão do selo pelo Agente!"
+                )
+        env_hmac_key = os.environ.get("MANIFEST_HMAC_SECRET", "").strip()
+        if env_hmac_key:
+            expected_hmac = hmac.new(
+                env_hmac_key.encode("utf-8"),
+                f"{computed_canonical_sha}:{seal.get('companion_docs_sha256', '')}:{expected_sha}".encode("utf-8"),
+                hashlib.sha256,
+            ).hexdigest()
+            if not hmac.compare_digest(expected_hmac, str(seal.get("hmac_sha256_signature", ""))):
+                errors.append(
+                    "VIOLAÇÃO CRIPTOGRÁFICA HMAC-SHA256: A assinatura 'hmac_sha256_signature' do manifesto é inválida!"
+                )
 
     if errors:
         raise ValueError("Falha na validação determinística de governança:\n- " + "\n- ".join(errors))

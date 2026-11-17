@@ -6,8 +6,8 @@
   "solution_repo": "zip-detran-dti-hive-gestao-frota",
   "git_branch": "gcp/sandbox",
   "git_tag": "GCP_DEPLOYED_VERSION",
-  "expected_commit_sha": "8ee9927c656dd33329d7eee891536ce8972ff168",
-  "source_commit_sha": "8ee9927c656dd33329d7eee891536ce8972ff168",
+  "expected_commit_sha": "7cb62137395a3796eaa6af6c6b6708975a46b2ce",
+  "source_commit_sha": "7cb62137395a3796eaa6af6c6b6708975a46b2ce",
   "commits_ahead_of_main": 1,
   "commits_behind_main": 0,
   "compare_against_main_url": "https://github.com/detran-automation-dev/zip-detran-dti-hive-gestao-frota/compare/main...GCP_DEPLOYED_VERSION",
@@ -131,5 +131,34 @@
   "approval_status": "APPROVED_ON_MERGE",
   "requested_by": "arquiteto.dti@detran.sp.gov.br",
   "requested_at_utc": "2026-11-17T21:00:50Z",
-  "business_justification": "Modernização do sistema de Gestão de Frotas DTI para ambiente governado detran-gemini com GCLB HTTPS, SPA estático em GCS, Cloud Run v2 e banco compartilhado PostgreSQL"
+  "business_justification": "Modernização do sistema de Gestão de Frotas DTI para ambiente governado detran-gemini com GCLB HTTPS, SPA estático em GCS, Cloud Run v2 e banco compartilhado PostgreSQL",
+  "integrity_seal": {
+    "version": "1.0",
+    "algorithm": "HMAC-SHA256",
+    "sealed_by": "detran-adk-agent-engine",
+    "canonical_fields": [
+      "schema_version",
+      "workload_slug",
+      "request_type",
+      "github_org",
+      "solution_repo",
+      "git_branch",
+      "git_tag",
+      "expected_commit_sha",
+      "target_gcp_project",
+      "region",
+      "provisioner_service_account",
+      "budget_brl",
+      "ttl",
+      "ttl_minutes",
+      "database_type",
+      "enable_redis",
+      "observability_sre",
+      "teardown_mode",
+      "sarif_security_verdict"
+    ],
+    "canonical_payload_sha256": "64f0a04549a16e0ba897c5d2c7e3fa0715ff419970140ff6753d7706ddd176f8",
+    "companion_docs_sha256": "4010ba6d7f4c1297a49a54209505d8b70cd09d2954e08ac07319daf1267eefd9",
+    "hmac_sha256_signature": "5287e8a5121e3ac9444e2f1340b80ec217e368c18e60968b3cd0ce6625b10b2f"
+  }
 }
