@@ -27,6 +27,7 @@ jobs:
   provision-workload:
     name: Enforce Budget/TTL/Alerts + Shared DB Import + Deploy to detran-gemini
     runs-on: ubuntu-latest
+    timeout-minutes: 75
     steps:
       - name: Checkout main branch
         uses: actions/checkout@v4
@@ -112,9 +113,13 @@ jobs:
           ./scripts/provision_workload.sh
 
       - name: Commit Active Lease Receipt to main
-        if: steps.policy.outputs.allow_deploy == 'true'
+        if: always() && steps.policy.outputs.allow_deploy == 'true'
         run: |
           set -euo pipefail
+          if [[ ! -f "active-leases/${{ steps.policy.outputs.workload_slug }}.json" ]]; then
+            echo "Nenhum lease gerado nesta execução; nada a registrar."
+            exit 0
+          fi
           GH_PAT=$(gcloud secrets versions access latest --secret="detran-github-org-pat" --project="detran-gemini")
           git config --local --unset-all http.https://github.com/.extraheader || true
           git config user.name "Ernani Joppert Pontes Martins"
@@ -127,7 +132,7 @@ jobs:
           fi
 
       - name: Write Deployment Summary
-        if: steps.policy.outputs.allow_deploy == 'true'
+        if: always() && steps.policy.outputs.allow_deploy == 'true'
         run: |
           {
             echo "## Provisionamento Aprovado Concluído em \`detran-gemini\`"
@@ -139,7 +144,8 @@ jobs:
             echo "- **Dashboard SRE, SLOs & Rateio FinOps**: [Abrir no Cloud Monitoring](${{ steps.deploy.outputs.dashboard_url }})"
             echo "- **Canais de Alerta por E-mail**: \`${{ steps.policy.outputs.alert_emails_csv }}\`"
             echo "- **Orçamento Máximo Forçado**: **R$ ${{ steps.policy.outputs.budget_brl }}**"
-            echo "- **Tempo de Vida (TTL) Forçado**: **\`${{ steps.policy.outputs.ttl }}\` (${{ steps.policy.outputs.ttl_minutes }} minutos)** — autodestruição programada para \`${{ steps.deploy.outputs.expires_at_utc }}\`"
+            echo "- **HTTPS validado (certificado SSL confiável nos 3 hosts)**: \`${{ steps.deploy.outputs.https_verified || 'false' }}\` em \`${{ steps.deploy.outputs.https_verified_at_utc || 'n/a' }}\` (${{ steps.deploy.outputs.ssl_wait_minutes || '?' }} min após o deploy)"
+            echo "- **Tempo de Vida (TTL) Forçado**: **\`${{ steps.policy.outputs.ttl }}\` (${{ steps.policy.outputs.ttl_minutes }} minutos), contados a partir da validação HTTPS** — iniciado em \`${{ steps.deploy.outputs.ttl_started_at_utc }}\`, autodestruição programada para \`${{ steps.deploy.outputs.expires_at_utc }}\`"
             echo "- **URL Frontend (HTTPS)**: ${{ steps.deploy.outputs.web_url }}"
             echo "- **URL API (HTTPS)**: ${{ steps.deploy.outputs.api_url }}"
           } >> "$GITHUB_STEP_SUMMARY"
