@@ -1,7 +1,7 @@
 {
   "workload_slug": "vtr2",
   "short_slug": "vtr2",
-  "status": "ACTIVE",
+  "status": "DECOMMISSIONED",
   "target_gcp_project": "detran-gemini",
   "region": "southamerica-east1",
   "github_org": "detran-automation-dev",
@@ -36,6 +36,8 @@
   "ttl_manual_extension": {
     "previous_expires_at_utc": "2026-11-18T14:00:00Z",
     "extended_at_utc": "2026-11-18T13:24:57Z",
-    "reason": "Extensão manual para teste interativo do login dev após ajuste do Cloud Armor (falso positivo OWASP 942260)"
-  }
+    "reason": "Extens\u00e3o manual para teste interativo do login dev ap\u00f3s ajuste do Cloud Armor (falso positivo OWASP 942260)"
+  },
+  "decommissioned_at_utc": "2026-11-18T15:04:46Z",
+  "decommissioned_reason": "TTL_EXPIRED (15m)"
 }
