@@ -1,24 +1,22 @@
 # ==============================================================================
 # DETRAN-SP (DTI) — Governança de Aprovação Cloud & FinOps (CODEOWNERS)
 # ==============================================================================
-# Define os aprovadores obrigatórios para mudanças de governança, pipelines
-# OIDC/WIF, scripts de provisionamento e requisições de deploy em
-# cloud-provisioning-approvals.
+# Aprovadores obrigatórios (Code Owners) das solicitações de provisionamento,
+# pipelines OIDC/WIF e scripts de provisionamento em cloud-provisioning-approvals.
 #
-# Para adicionar novos aprovadores da DTI (Arquitetura, Segurança, FinOps),
-# basta acrescentar os handles do GitHub ao lado de @ernani nas regras abaixo:
-# Exemplo: /requests/ @ernani @lucas-dti @time-arquitetura-detran
+# A Ruleset "DTI-CODEOWNERS-and-FinOps-Gate" exige 1 aprovação de um Code Owner
+# (diferente do autor do PR) + o check "Enforce Mandatory Budget, TTL &
+# GCP_DEPLOYED_VERSION SHA Lock" verde antes do merge na main.
+#
+# Para incluir novos aprovadores da DTI, acrescente o usuário GitHub (com acesso
+# de escrita ao repositório) ao final de cada regra abaixo.
 # ==============================================================================
-
 # Regra Global Padrão (Fallback para qualquer arquivo do repositório)
-*                                         @ernani
-
+*                                         @wagner-silva-detran @cesario-ti @ernani
 # Esteira OIDC/WIF e Workflows do GitHub Actions (Crítico - Segurança Cloud)
-/.github/workflows/                       @ernani
-/.github/CODEOWNERS                       @ernani
-
+/.github/workflows/                       @wagner-silva-detran @cesario-ti @ernani
+/.github/CODEOWNERS                       @wagner-silva-detran @cesario-ti @ernani
 # Scripts de Provisionamento Terraform, Reconciliação GCLB/DB e Teardown FinOps
-/scripts/                                 @ernani
-
+/scripts/                                 @wagner-silva-detran @cesario-ti @ernani
 # Requisições de Provisionamento de Workloads (PRs gerados pelo Agente ADK)
-/requests/                                @ernani
+/requests/                                @wagner-silva-detran @cesario-ti @ernani
