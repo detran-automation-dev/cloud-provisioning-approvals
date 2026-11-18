@@ -18,7 +18,7 @@
   "shared_redis_instance": "",
   "alert_emails": "ernanimartins@google.com",
   "monitoring_dashboard_url": "https://console.cloud.google.com/monitoring/dashboards/builder/projects/881857743262/dashboards/909059ea-8074-491e-8e61-23b70ee9c321?project=detran-gemini",
-  "budget_brl": 200.00,
+  "budget_brl": 200.0,
   "ttl": "15m",
   "ttl_minutes": 15,
   "deployed_at_utc": "2026-11-18T12:31:02Z",
@@ -26,11 +26,16 @@
   "https_verified_at_utc": "2026-11-18T12:35:49Z",
   "ssl_wait_minutes": 5,
   "ttl_started_at_utc": "2026-11-18T12:35:49Z",
-  "expires_at_utc": "2026-11-18T12:50:49Z",
-  "expires_at_epoch": 1795006249,
+  "expires_at_utc": "2026-11-18T14:00:00Z",
+  "expires_at_epoch": 1795010400,
   "web_url": "https://vtr2-frontend.136.68.168.106.nip.io",
   "bff_url": "https://vtr2-backend.136.68.168.106.nip.io",
   "api_url": "https://vtr2-api.136.68.168.106.nip.io",
   "teardown_mode": "terraform_destroy_workload_only",
-  "terraform_state_uri": "gs://detran-gemini-provisioning-tfstate/workloads/vtr2"
+  "terraform_state_uri": "gs://detran-gemini-provisioning-tfstate/workloads/vtr2",
+  "ttl_manual_extension": {
+    "previous_expires_at_utc": "2026-11-18T12:50:49Z",
+    "extended_at_utc": "2026-11-18T13:00:53Z",
+    "reason": "Extensão manual para teste interativo do login dev após ajuste do Cloud Armor (falso positivo OWASP 942260)"
+  }
 }
