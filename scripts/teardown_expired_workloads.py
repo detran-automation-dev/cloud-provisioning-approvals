@@ -134,9 +134,10 @@ def destroy_workload(
         )
 
         if not destroy_shared_engines:
-            # Ensure shared_gclb_already_exists is true during destroy so data source resolves cleanly if needed
+            # Ensure shared_gclb_already_exists and shared_db_already_exists are true during destroy
             vdata = json.loads(vars_path.read_text(encoding="utf-8"))
             vdata["shared_gclb_already_exists"] = True
+            vdata["shared_db_already_exists"] = True
             vars_path.write_text(json.dumps(vdata, indent=2) + "\n", encoding="utf-8")
 
             for addr in SHARED_SINGLETON_STATE_ADDRS:
