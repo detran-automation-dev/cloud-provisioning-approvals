@@ -16,10 +16,19 @@ import argparse
 import datetime
 import json
 import pathlib
+import re
 import shutil
 import subprocess
 import sys
 import tempfile
+
+SHARED_SQL_ENGINES = {"postgresql", "mysql", "sqlserver"}
+
+
+def app_database_name(slug: str) -> str:
+    """Mirrors the generator naming (`db_<tf_id>`) used by `google_sql_database.app_db`."""
+    tf_id = re.sub(r"[^a-z0-9_]", "_", slug.strip().lower())[:24].rstrip("_")
+    return f"db_{tf_id}"
 
 SHARED_SINGLETON_STATE_ADDRS: tuple[str, ...] = (
     # Shared SQL & Redis Singletons
@@ -160,6 +169,40 @@ def destroy_workload(
         )
 
     sched_job = f"ttl-exp-{slug}"
+    db_type = str(lease.get("database_type", "")).strip().lower()
+    shared_sql = str(lease.get("shared_sql_instance", "")).strip()
+    if (
+        not destroy_shared_engines
+        and db_type in SHARED_SQL_ENGINES
+        and shared_sql
+        and shutil.which("gcloud")
+    ):
+        # google_sql_database.app_db usa deletion_policy=ABANDON (o destroy nao derruba conexoes ativas);
+        # com os servicos da app ja destruidos, removemos o database logico para que um novo deploy
+        # do mesmo workload nao falhe com "database already exists".
+        app_db = app_database_name(slug)
+        db_proc = subprocess.run(
+            [
+                "gcloud",
+                "sql",
+                "databases",
+                "delete",
+                app_db,
+                f"--instance={shared_sql}",
+                f"--project={project_id}",
+                "--quiet",
+            ],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        if db_proc.returncode == 0:
+            print(f"[TEARDOWN] Database lógico '{app_db}' removido do singleton '{shared_sql}'.")
+        else:
+            print(
+                f"::warning::[TEARDOWN] Database lógico '{app_db}' não removido de '{shared_sql}': "
+                f"{(db_proc.stderr or db_proc.stdout or '').strip()[:240]}"
+            )
     if shutil.which("gcloud"):
         subprocess.run(
             [
