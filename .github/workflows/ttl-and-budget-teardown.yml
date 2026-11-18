@@ -106,7 +106,7 @@ jobs:
           git config --local --unset-all http.https://github.com/.extraheader || true
           git config user.name "Ernani Joppert Pontes Martins"
           git config user.email "114523+ernani@users.noreply.github.com"
-          git rm -rfv --ignore-unmatch teardown-triggers/ || true
+          git rm -r -f --ignore-unmatch -- teardown-triggers/ || echo "::warning::Falha ao limpar teardown-triggers/"
           git add -A active-leases/
           if ! git diff --cached --quiet; then
             git commit -m "chore(ttl-teardown): destroy expired workloads (${{ steps.destroy.outputs.destroyed_slugs }}) [skip ci]"
