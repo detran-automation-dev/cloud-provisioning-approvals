@@ -1,7 +1,7 @@
 {
   "workload_slug": "vtr2",
   "short_slug": "vtr2",
-  "status": "ACTIVE",
+  "status": "DECOMMISSIONED",
   "target_gcp_project": "detran-gemini",
   "region": "southamerica-east1",
   "github_org": "detran-automation-dev",
@@ -18,7 +18,7 @@
   "shared_redis_instance": "",
   "alert_emails": "ernanimartins@google.com",
   "monitoring_dashboard_url": "https://console.cloud.google.com/monitoring/dashboards/builder/projects/881857743262/dashboards/f0c41b7c-3292-4e8a-b520-e693e5a8b08f?project=detran-gemini",
-  "budget_brl": 200.00,
+  "budget_brl": 200.0,
   "ttl": "15m",
   "ttl_minutes": 15,
   "deployed_at_utc": "2026-11-18T11:30:42Z",
@@ -28,5 +28,7 @@
   "bff_url": "https://vtr2-backend.136.68.168.106.nip.io",
   "api_url": "https://vtr2-api.136.68.168.106.nip.io",
   "teardown_mode": "terraform_destroy_workload_only",
-  "terraform_state_uri": "gs://detran-gemini-provisioning-tfstate/workloads/vtr2"
+  "terraform_state_uri": "gs://detran-gemini-provisioning-tfstate/workloads/vtr2",
+  "decommissioned_at_utc": "2026-11-18T11:50:27Z",
+  "decommissioned_reason": "TTL_EXPIRED_15M"
 }
