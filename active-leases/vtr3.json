@@ -1,7 +1,7 @@
 {
   "workload_slug": "vtr3",
   "short_slug": "vtr3",
-  "status": "ACTIVE",
+  "status": "DECOMMISSIONED",
   "target_gcp_project": "detran-gemini",
   "region": "southamerica-east1",
   "github_org": "detran-automation-dev",
@@ -58,5 +58,7 @@
     }
   ],
   "decommission_requested_by": "ernanimartins@google.com",
-  "decommission_requested_at_utc": "2026-11-18T15:01:45Z"
+  "decommission_requested_at_utc": "2026-11-18T15:01:45Z",
+  "decommissioned_at_utc": "2026-11-18T15:17:13Z",
+  "decommissioned_reason": "DECOMMISSION_REQUESTED (ernanimartins@google.com)"
 }
