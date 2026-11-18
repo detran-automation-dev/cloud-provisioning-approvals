@@ -2,7 +2,7 @@
 """Deterministic FinOps, Shared Singleton DB, SRE Alerting & Tag Lock Gatekeeper.
 
 Enforces:
-  1. Mandatory `budget_brl` (> 0) and `ttl` (e.g. '15m' demo / '15d' sandbox).
+  1. Mandatory `budget_brl` (> 0) and `ttl` (e.g. '1h' demo / '15d' sandbox).
   2. Mandatory `observability_sre.alert_emails` (>= 1 valid recipient e-mail for Cloud Monitoring alerts).
   3. Valid singleton `database_type` ('postgresql', 'mysql', 'sqlserver', or 'none').
   4. Dual-pinning on `GCP_DEPLOYED_VERSION` tag + immutable `expected_commit_sha` (anti-TOCTOU).
@@ -36,7 +36,7 @@ def parse_ttl_to_minutes(raw_ttl: str) -> int:
     match = _TTL_RE.fullmatch(str(raw_ttl or ""))
     if not match:
         raise ValueError(
-            f"Formato de TTL inválido '{raw_ttl}'. Use minutos ('15m'), horas ('2h') ou dias ('15d')."
+            f"Formato de TTL inválido '{raw_ttl}'. Use minutos ('30m'), horas ('1h') ou dias ('15d')."
         )
     amount = int(match.group(1))
     unit = match.group(2).lower()
@@ -106,7 +106,7 @@ def validate_manifest(manifest_path: pathlib.Path, policy: dict[str, Any]) -> di
     raw_ttl = str(data.get("ttl", "")).strip()
     ttl_minutes = 0
     if not raw_ttl:
-        errors.append("Argumento obrigatório 'ttl' (ex.: '15m' ou '15d') ausente no manifesto de aprovação.")
+        errors.append("Argumento obrigatório 'ttl' (ex.: '1h' ou '15d') ausente no manifesto de aprovação.")
     else:
         try:
             ttl_minutes = parse_ttl_to_minutes(raw_ttl)

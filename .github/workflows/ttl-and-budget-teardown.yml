@@ -15,7 +15,7 @@ on:
       reason:
         description: "Motivo auditável do descomissionamento"
         required: false
-        default: "TTL_EXPIRED_15M"
+        default: "TTL_EXPIRED"
         type: string
       force_now:
         description: "Forçar terraform destroy imediato desta aplicação mesmo antes do horário de expiração"
@@ -94,7 +94,7 @@ jobs:
         run: |
           python3 scripts/teardown_expired_workloads.py \
             --workload-slug "${{ github.event.inputs.workload_slug || '' }}" \
-            --reason "${{ github.event.inputs.reason || 'TTL_EXPIRED_15M' }}" \
+            --reason "${{ github.event.inputs.reason || '' }}" \
             --force-now "${{ github.event.inputs.force_now || 'false' }}" \
             --github-output "$GITHUB_OUTPUT"
 

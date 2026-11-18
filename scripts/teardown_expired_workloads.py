@@ -273,7 +273,11 @@ def main() -> int:
             effective_reason = f"BUDGET_HARD_CAP_REACHED ({simulated_spend:.2f}/{budget_brl:.2f} BRL)"
         elif expires_epoch > 0 and now_epoch >= expires_epoch:
             should_destroy = True
-            effective_reason = args.reason or f"TTL_EXPIRED ({data.get('ttl', '15m')})"
+            requested_by = str(data.get("decommission_requested_by", "")).strip()
+            if requested_by:
+                effective_reason = f"DECOMMISSION_REQUESTED ({requested_by})"
+            else:
+                effective_reason = args.reason or f"TTL_EXPIRED ({data.get('ttl', '1h')})"
 
         if should_destroy:
             print(
