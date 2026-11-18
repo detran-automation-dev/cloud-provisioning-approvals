@@ -20,6 +20,7 @@ import re
 import shutil
 import subprocess
 import sys
+import time
 import tempfile
 
 SHARED_SQL_ENGINES = {"postgresql", "mysql", "sqlserver"}
@@ -181,21 +182,30 @@ def destroy_workload(
         # com os servicos da app ja destruidos, removemos o database logico para que um novo deploy
         # do mesmo workload nao falhe com "database already exists".
         app_db = app_database_name(slug)
-        db_proc = subprocess.run(
-            [
-                "gcloud",
-                "sql",
-                "databases",
-                "delete",
-                app_db,
-                f"--instance={shared_sql}",
-                f"--project={project_id}",
-                "--quiet",
-            ],
-            check=False,
-            capture_output=True,
-            text=True,
-        )
+        db_proc = None
+        for attempt in range(1, 5):
+            db_proc = subprocess.run(
+                [
+                    "gcloud",
+                    "sql",
+                    "databases",
+                    "delete",
+                    app_db,
+                    f"--instance={shared_sql}",
+                    f"--project={project_id}",
+                    "--quiet",
+                ],
+                check=False,
+                capture_output=True,
+                text=True,
+            )
+            if db_proc.returncode == 0 or "not found" in (db_proc.stderr or "").lower():
+                break
+            if attempt < 4 and "being accessed by other users" in (db_proc.stderr or "").lower():
+                print(f"[TEARDOWN] Aguardando conexões residuais de '{app_db}' encerrarem (tentativa {attempt}/4)...")
+                time.sleep(10)
+            else:
+                break
         if db_proc.returncode == 0:
             print(f"[TEARDOWN] Database lógico '{app_db}' removido do singleton '{shared_sql}'.")
         else:

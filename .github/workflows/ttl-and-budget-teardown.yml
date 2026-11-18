@@ -41,6 +41,8 @@ jobs:
     steps:
       - name: Checkout main branch
         uses: actions/checkout@v4
+        with:
+          ref: main
 
       - name: Check if any active lease requires teardown
         id: check
