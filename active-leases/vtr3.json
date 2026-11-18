@@ -18,19 +18,34 @@
   "shared_redis_instance": "",
   "alert_emails": "ernanimartins@google.com",
   "monitoring_dashboard_url": "https://console.cloud.google.com/monitoring/dashboards/builder/projects/881857743262/dashboards/53036171-3223-441b-ba78-7e3db0004987?project=detran-gemini",
-  "budget_brl": 200.00,
-  "ttl": "1h",
-  "ttl_minutes": 60,
+  "budget_brl": 200.0,
+  "ttl": "2h",
+  "ttl_minutes": 120,
   "deployed_at_utc": "2026-11-18T14:46:54Z",
   "https_verified": true,
   "https_verified_at_utc": "2026-11-18T14:52:31Z",
   "ssl_wait_minutes": 6,
   "ttl_started_at_utc": "2026-11-18T14:52:31Z",
-  "expires_at_utc": "2026-11-18T15:52:31Z",
-  "expires_at_epoch": 1795017151,
+  "expires_at_utc": "2026-11-18T17:00:04Z",
+  "expires_at_epoch": 1795021204,
   "web_url": "https://vtr3-frontend.136.68.168.106.nip.io",
   "bff_url": "https://vtr3-backend.136.68.168.106.nip.io",
   "api_url": "https://vtr3-api.136.68.168.106.nip.io",
   "teardown_mode": "terraform_destroy_workload_only",
-  "terraform_state_uri": "gs://detran-gemini-provisioning-tfstate/workloads/vtr3"
+  "terraform_state_uri": "gs://detran-gemini-provisioning-tfstate/workloads/vtr3",
+  "ttl_overridden_by": "ernanimartins@google.com",
+  "ttl_overridden_at_utc": "2026-11-18T15:00:04Z",
+  "lifecycle_overrides": [
+    {
+      "action": "set_ttl",
+      "requester_email": "ernanimartins@google.com",
+      "reason": "validacao E2E",
+      "requested_at_utc": "2026-11-18T14:56:44Z",
+      "applied_at_utc": "2026-11-18T15:00:04Z",
+      "previous_expires_at_utc": "2026-11-18T15:52:31Z",
+      "new_expires_at_utc": "2026-11-18T17:00:04Z",
+      "ttl": "2h",
+      "scheduler": "Cloud Scheduler ttl-exp-vtr3 reprogramado para 1 17 18 11 * (UTC)"
+    }
+  ]
 }

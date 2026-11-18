@@ -26,5 +26,15 @@
     ],
     "canonical_payload_sha256": "ed015b191cf50c7699a0933b30f6fcdd2bbacc18e671ed27c6540a792062cad5",
     "hmac_sha256_signature": "baecae8914be0b0b1adb65ebcb140b28372816bb1171cc45f9bb06b99b908679"
+  },
+  "processing_result": {
+    "request_file": "vtr3-set-ttl-1795013804.json",
+    "status": "APPLIED",
+    "detail": "novo TTL 2h a partir de agora; Cloud Scheduler ttl-exp-vtr3 reprogramado para 1 17 18 11 * (UTC)",
+    "workload_slug": "vtr3",
+    "action": "set_ttl",
+    "requester_email": "ernanimartins@google.com",
+    "new_expires_at_utc": "2026-11-18T17:00:04Z",
+    "processed_at_utc": "2026-11-18T15:00:04Z"
   }
 }
