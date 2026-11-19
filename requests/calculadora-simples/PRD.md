@@ -4,7 +4,7 @@
 
 - **Aplicação**: **Calculadora Simples Administrativa** (`calculadora-simples`)
 - **Subtítulo Funcional**: Gestão e registro auditável de cálculos operacionais e memórias de cálculo institucionais.
-- **Demanda / Justificativa**: Calculadora simples administrativa e institucional com operações aritméticas básicas (+, -, *, /), histórico de cálculos persistido com protocolo, resultado obtido, justificativa e processo SEI vinculado. Interface com 4 KPIs em tempo real, filtros por status (Rascunho, Em Validação, Consolidado), tabela e cards, API REST validada em NestJS + Prisma ORM e schema PostgreSQL isolado calculadora_simples.
+- **Demanda / Justificativa**: Calculadora básica clássica com teclado numérico de 0 a 9, ponto decimal, quatro operações básicas (+, -, *, /), igual (=), limpar (C/AC), apagar (backspace), display digital interativo de expressão e resultado, suporte a teclado físico, e painel lateral simples de histórico de cálculos persistido em PostgreSQL com expressão, resultado e timestamp.
 - **Entidade Principal de Domínio**: `Cálculo Institucional` / `Cálculos Institucionais`
 - **Isolamento de Dados**: Cloud SQL PostgreSQL compartilhado (`detran-shared-pgsql`), database `db_calculadora_simples`, schema exclusivo `calculadora_simples` (zero uso de `public`).
 
@@ -14,7 +14,8 @@
 - **RN-002**: Geração automática de protocolo sequencial prefixado com 'CALC' via trigger/service no schema isolado calculadora_simples.
 - **RN-003**: Imutabilidade do registro com status 'CONSOLIDADO', admitindo edições apenas em 'RASCUNHO' e 'EM_VALIDACAO'.
 - **RN-004**: Auditoria completa de logs de alteração e validação de vínculo com número de processo SEI válido via regex institucional.
-- **RN-005 [LGPD & GOVERNANÇA]**: Nenhum dado pessoal sensível sem mascaramento em telas ou logs; autenticação e borda protegidas por GCLB HTTPS + Cloud Armor WAF.
+- **RN-005**: Evolução incremental Day-2 preservando schema 'calculadora_simples' e registros ativos: campos adicionados (Complemento Operacional, Origem do Lançamento, Data/Hora do Registro); novos status (Arquivado).
+- **RN-006 [LGPD & GOVERNANÇA]**: Nenhum dado pessoal sensível sem mascaramento em telas ou logs; autenticação e borda protegidas por GCLB HTTPS + Cloud Armor WAF.
 
 ## 3. Histórias de Usuário em Formato Gherkin (INVEST)
 
@@ -24,8 +25,8 @@ Funcionalidade: Painel de Gestão de Cálculos Institucionais
   Cenário: Carregamento inicial da tela com indicadores e registros do PostgreSQL
     Dado que o operador acessa o portal "Calculadora Simples Administrativa" via HTTPS (.nip.io)
     Quando a aplicação consulta GET /api/items e GET /api/status na mesma origem
-    Então a interface exibe os 4 indicadores KPI consolidados e os 6 registros iniciais do schema "calculadora_simples"
-    E permite filtrar por busca textual, status (`RASCUNHO` (Rascunho), `EM_VALIDACAO` (Em Validação), `CONSOLIDADO` (Consolidado)), prioridade e categoria
+    Então a interface exibe os 4 indicadores KPI consolidados e os 7 registros iniciais do schema "calculadora_simples"
+    E permite filtrar por busca textual, status (`RASCUNHO` (Rascunho), `EM_VALIDACAO` (Em Validação), `ARQUIVADO` (Arquivado), `CONSOLIDADO` (Consolidado)), prioridade e categoria
 ```
 
 ### US-002 — Cadastro Validado de Cálculo Institucional com Persistência PostgreSQL
@@ -61,6 +62,9 @@ Funcionalidade: Ciclo de Vida de Cálculo Institucional
 | `resultado_apurado` | Resultado Apurado | `text` | Sim |
 | `processo_sei` | Processo SEI Vinculado | `text` | Sim |
 | `justificativa_operacao` | Justificativa da Memória | `textarea` | Não |
+| `complemento_evolucao` | Complemento Operacional | `textarea` | Não |
+| `origem_calculo` | Origem do Lançamento | `select` | Não |
+| `timestamp_execucao` | Data/Hora do Registro | `text` | Não |
 
 ## 5. Contrato de Endpoints REST da API (Node.js 22 + Cloud Run v2)
 
@@ -73,7 +77,7 @@ Funcionalidade: Ciclo de Vida de Cálculo Institucional
 | `PATCH /api/items/:id` | Atualiza status, flag `concluido` ou campos do registro | `200 OK` |
 | `DELETE /api/items/:id` | Remove registro por UUID | `200 OK` |
 
-## 6. Esquema PostgreSQL & Massa Inicial (`seed` de 6 registros)
+## 6. Esquema PostgreSQL & Massa Inicial (`seed` de 7 registros)
 
 Tabela `calculadora_simples.registros` inicializada automaticamente no boot da API via `sql/001_init_and_seed.sql`:
 
@@ -85,6 +89,7 @@ Tabela `calculadora_simples.registros` inicializada automaticamente no boot da A
 | `CALC-1004` | Saldo Residual de Bobinas de CNH | `CONSOLIDADO` | `MEDIA` | Apurador de Estoque e Suprimentos | Coordenação de Logística e Materiais |
 | `CALC-1005` | Ajuste Contábil de Repasse a Municípios Conveniados | `EM_VALIDACAO` | `ALTA` | Ajuste de Arrecadação | Gerência Financeira |
 | `CALC-1006` | Cálculo de Desconto em Folha por Hora Não Cumprida | `CONSOLIDADO` | `BAIXA` | Tarifas e Emolumentos | Diretoria de Recursos Humanos |
+| `CALC-1007` | Entrega Incremental #7 — Complemento Operacional | `ARQUIVADO` | `ALTA` | Diárias e Deslocamentos | Coordenação de Arquitetura DTI |
 
 ## 7. Parâmetros de Governança no Sandbox (`detran-gemini`)
 
