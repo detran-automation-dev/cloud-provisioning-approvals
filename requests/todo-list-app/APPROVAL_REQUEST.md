@@ -12,7 +12,7 @@
 | **Workload Slug** | `todo-list-app` | Identificador isolado de GCS SPA, Cloud Run v2, Pub/Sub, DB lógico e TF State |
 | **Repositório da Aplicação** | `detran-automation-dev/todo-list-app` | Branch `main` preservada 100% intocada |
 | **Branch & Tag de Deploy** | `gcp/sandbox` / **`GCP_DEPLOYED_VERSION`** | Checkout estrito na tag `GCP_DEPLOYED_VERSION` |
-| **Trava SHA Anti-Tampering** | `bd7ba4df63f1f5893b25568428347ab3847347da` | Abortará o deploy se `GCP_DEPLOYED_VERSION` divergir deste SHA |
+| **Trava SHA Anti-Tampering** | `8ef7fc0e0f4f82f68179f2289644b3fb4e20116b` | Abortará o deploy se `GCP_DEPLOYED_VERSION` divergir deste SHA |
 | **Diff vs `main` (`ahead/behind`)** | [`1 ahead` / `0 behind` `main`](https://github.com/detran-automation-dev/todo-list-app/compare/main...GCP_DEPLOYED_VERSION) | Visibilidade integral das alterações do Agente contra `main` |
 | **GCLB HTTPS + Redirect 301 (`.nip.io`)** | `https://todo-list-app-frontend.<gclb_ip>.nip.io` (SPA GCS BackendBucket, zero container) / `https://todo-list-app-backend.<gclb_ip>.nip.io` (BFF) / `https://todo-list-app-api.<gclb_ip>.nip.io` (API) | Redirect HTTP->HTTPS `301` + Certificado SSL Certificate Manager + Cloud Armor WAF |
 | **Pub/Sub Isolado & Serverless** | `todo-list-app-events`, `todo-list-app-dlq` | Tópicos + DLQ isolados por projeto + suporte a Cloud Run Functions v2 |
@@ -24,11 +24,11 @@
 | **Tempo de Vida (`ttl`)** | **`1h` (60 minutos)** | Autodestruição automática dos workloads ao expirar o relógio |
 | **Modo de Descomissionamento** | `terraform_destroy_workload_only` | **Remove apenas os workloads e rotas GCLB da app**; preserva projeto `detran-gemini`, GCLB/DB singletons, `main` e repositório Git |
 | **Veredito Gatekeeper SARIF** | `PASS` | OWASP Top 10 + 5 Regras de Segurança IA/LGPD |
-| **Solicitante** | `wagner.silva@detran.sp.gov.br` | Registrado em `2026-11-19T01:22:14Z` |
+| **Solicitante** | `wagner.silva@detran.sp.gov.br` | Registrado em `2026-11-19T12:48:52Z` |
 
 ## 2. Justificativa Executiva / Negócio
 
-Implantação do Gestor de Tarefas e Demandas Operacionais DETRAN-SP (todo-list-app) com banco PostgreSQL 16 compartilhado (schema dedicado 'todo_list_app'), API REST NestJS 10 e frontend React 18 SPA.
+App corporativo de gestão de tarefas e demandas operacionais DETRAN-SP conforme padrões oficiais DTI/DETRAN-SP.
 
 ## 3. Como Aprovar ou Rejeitar
 
