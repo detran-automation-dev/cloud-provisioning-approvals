@@ -4,7 +4,11 @@
 
 - **Aplicação**: **Gestão de Tarefas e Demandas Operacionais** (`todo-list-app`)
 - **Subtítulo Funcional**: Painel Integrado de Controle de Atividades e Prazos Administrativos DETRAN-SP
-- **Demanda / Justificativa**: App de Gestão de Tarefas e Demandas Operacionais DETRAN-SP (todo-list-app). Frontend React 18 + TypeScript + Vite + MUI v6 (SPA estático em GCS + Cloud CDN). Backend NestJS 10 + Prisma ORM multiSchema REST API com endpoints para criar, listar, atualizar e apagar tarefas. Banco de dados Cloud SQL PostgreSQL 16 com schema dedicado 'todo_list_app', sem uso do schema public. Controle anti-IDOR server-side, validação estrita de payload e auditoria append-only.
+- **Demanda / Justificativa**: App corporativo de gestão de tarefas e demandas operacionais DETRAN-SP.
+Telas: Painel com 4 KPIs, filtros de status (Pendente, Em Andamento, Em Revisão, Concluída), prioridades (Alta, Média, Baixa), categorias temáticas DETRAN-SP, busca textual e alternância Tabela/Cards.
+API REST: NestJS com Prisma ORM, endpoints /api/items, /api/spec, /api/health, /api/status.
+Persistência: Cloud SQL PostgreSQL 16 com schema dedicado 'todo_list_app'.
+Segurança: Zero-Trust, Anti-IDOR, validação rigorosa de DTOs, CSP estrito, sem uso de localStorage.
 - **Entidade Principal de Domínio**: `Demanda Operacional` / `Demandas Operacionais`
 - **Isolamento de Dados**: Cloud SQL PostgreSQL compartilhado (`detran-shared-pgsql`), database `db_todo_list_app`, schema exclusivo `todo_list_app` (zero uso de `public`).
 
@@ -15,7 +19,8 @@
 - **RN-003**: Persistência transacional exclusiva no schema PostgreSQL 'todo_list_app' com auditoria append-only para todas as mutações.
 - **RN-004**: Validação estrita de DTOs no NestJS com Pipes globais rejeitando propriedades desconhecidas.
 - **RN-005**: Imutabilidade de protocolos gerados sequencialmente com prefixo TSK-DETRAN.
-- **RN-006 [LGPD & GOVERNANÇA]**: Nenhum dado pessoal sensível sem mascaramento em telas ou logs; autenticação e borda protegidas por GCLB HTTPS + Cloud Armor WAF.
+- **RN-006**: Evolução incremental Day-2 preservando schema 'todo_list_app' e registros ativos: campos adicionados (Todo_list_app, Nível de Acesso à Informação).
+- **RN-007 [LGPD & GOVERNANÇA]**: Nenhum dado pessoal sensível sem mascaramento em telas ou logs; autenticação e borda protegidas por GCLB HTTPS + Cloud Armor WAF.
 
 ## 3. Histórias de Usuário em Formato Gherkin (INVEST)
 
@@ -25,7 +30,7 @@ Funcionalidade: Painel de Gestão de Demandas Operacionais
   Cenário: Carregamento inicial da tela com indicadores e registros do PostgreSQL
     Dado que o operador acessa o portal "Gestão de Tarefas e Demandas Operacionais" via HTTPS (.nip.io)
     Quando a aplicação consulta GET /api/items e GET /api/status na mesma origem
-    Então a interface exibe os 4 indicadores KPI consolidados e os 6 registros iniciais do schema "todo_list_app"
+    Então a interface exibe os 4 indicadores KPI consolidados e os 7 registros iniciais do schema "todo_list_app"
     E permite filtrar por busca textual, status (`PENDENTE` (Pendente), `EM_ANDAMENTO` (Em Andamento), `EM_REVISAO` (Em Revisão Técnica), `CONCLUIDA` (Concluída)), prioridade e categoria
 ```
 
@@ -62,6 +67,8 @@ Funcionalidade: Ciclo de Vida de Demanda Operacional
 | `unidade_lotacao` | Unidade de Lotação / Posto | `select` | Sim |
 | `despacho_instrucao` | Despacho ou Instrução Normativa | `textarea` | Não |
 | `data_conferencia` | Data Limite de Conferência | `date` | Sim |
+| `todo_list_app` | Todo_list_app | `text` | Não |
+| `nivel_sigilo` | Nível de Acesso à Informação | `select` | Sim |
 
 ## 5. Contrato de Endpoints REST da API (Node.js 22 + Cloud Run v2)
 
@@ -74,7 +81,7 @@ Funcionalidade: Ciclo de Vida de Demanda Operacional
 | `PATCH /api/items/:id` | Atualiza status, flag `concluido` ou campos do registro | `200 OK` |
 | `DELETE /api/items/:id` | Remove registro por UUID | `200 OK` |
 
-## 6. Esquema PostgreSQL & Massa Inicial (`seed` de 6 registros)
+## 6. Esquema PostgreSQL & Massa Inicial (`seed` de 7 registros)
 
 Tabela `todo_list_app.registros` inicializada automaticamente no boot da API via `sql/001_init_and_seed.sql`:
 
@@ -86,6 +93,7 @@ Tabela `todo_list_app.registros` inicializada automaticamente no boot da API via
 | `TSKDE-1004` | Calibração dos Radares Móveis de Fiscalização Integrada | `CONCLUIDA` | `ALTA` | Fiscalização de Trânsito | Equipe de Fiscalização |
 | `TSKDE-1005` | Atualização das Tabelas de Taxas de Emplacamento 2025 | `CONCLUIDA` | `MEDIA` | Sistemas e Tecnologia DTI | Coordenação DTI |
 | `TSKDE-1006` | Digitalização e Triagem de Prontuários Históricos | `PENDENTE` | `BAIXA` | Habilitação e Condutores | Serviço de Protocolo e Arquivo |
+| `TSKDE-1007` | Entrega Incremental #7 — Todo_list_app | `EM_REVISAO` | `ALTA` | Habilitação e Condutores | Coordenação de Arquitetura DTI |
 
 ## 7. Parâmetros de Governança no Sandbox (`detran-gemini`)
 
