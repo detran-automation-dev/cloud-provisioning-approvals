@@ -6,8 +6,8 @@
   "solution_repo": "calculadora-simples",
   "git_branch": "gcp/sandbox",
   "git_tag": "GCP_DEPLOYED_VERSION",
-  "expected_commit_sha": "4d5cca458ff095c165667d9579510c76a44296ce",
-  "source_commit_sha": "4d5cca458ff095c165667d9579510c76a44296ce",
+  "expected_commit_sha": "8c2f095269b0bcc0fcf65856649f384a05585c85",
+  "source_commit_sha": "8c2f095269b0bcc0fcf65856649f384a05585c85",
   "commits_ahead_of_main": 1,
   "commits_behind_main": 0,
   "compare_against_main_url": "https://github.com/detran-automation-dev/calculadora-simples/compare/main...GCP_DEPLOYED_VERSION",
@@ -130,8 +130,8 @@
   "sarif_security_verdict": "PASS",
   "approval_status": "APPROVED_ON_MERGE",
   "requested_by": "lucas.cesario@detran.sp.gov.br",
-  "requested_at_utc": "2026-11-19T22:18:23Z",
-  "business_justification": "Calculadora institucional para conferência e histórico auditável de operações aritméticas no DETRAN-SP.",
+  "requested_at_utc": "2026-11-19T23:10:41Z",
+  "business_justification": "Calculadora básica clássica com botões numéricos 0-9, quatro operações (+, -, *, /), display digital e fita de histórico.",
   "dti_standard_exception_justification": "",
   "integrity_seal": {
     "version": "1.0",
@@ -158,8 +158,8 @@
       "teardown_mode",
       "sarif_security_verdict"
     ],
-    "canonical_payload_sha256": "6260599388fc9ecbd33d4521fa1350c5e167e0fd34fedbd417389321c93ac99d",
-    "companion_docs_sha256": "51fe708831d356522da9e34c56c977af9af4bb2908029fd1951b1e4c6cb179b5",
-    "hmac_sha256_signature": "a141ce755c434973666f5dc3dd3adb6942a40d720198f19f57616ca3410a2cec"
+    "canonical_payload_sha256": "78f2780c8a3c350a136bccb1a2febecd21587644265d8bd66a68ba03d1d63818",
+    "companion_docs_sha256": "fa5128720e2bb7d65cfe87225882ecff179bf37e666dfd0079bc3ffef0023796",
+    "hmac_sha256_signature": "88f80f88b7cd4a43942a46d17a6a339f5efc304d1549cc4db1670475391c64f9"
   }
 }

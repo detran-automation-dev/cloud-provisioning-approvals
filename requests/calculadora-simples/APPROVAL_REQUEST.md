@@ -12,7 +12,7 @@
 | **Workload Slug** | `calculadora-simples` | Identificador isolado de GCS SPA, Cloud Run v2, Pub/Sub, DB lógico e TF State |
 | **Repositório da Aplicação** | `detran-automation-dev/calculadora-simples` | Branch `main` preservada 100% intocada |
 | **Branch & Tag de Deploy** | `gcp/sandbox` / **`GCP_DEPLOYED_VERSION`** | Checkout estrito na tag `GCP_DEPLOYED_VERSION` |
-| **Trava SHA Anti-Tampering** | `4d5cca458ff095c165667d9579510c76a44296ce` | Abortará o deploy se `GCP_DEPLOYED_VERSION` divergir deste SHA |
+| **Trava SHA Anti-Tampering** | `8c2f095269b0bcc0fcf65856649f384a05585c85` | Abortará o deploy se `GCP_DEPLOYED_VERSION` divergir deste SHA |
 | **Diff vs `main` (`ahead/behind`)** | [`1 ahead` / `0 behind` `main`](https://github.com/detran-automation-dev/calculadora-simples/compare/main...GCP_DEPLOYED_VERSION) | Visibilidade integral das alterações do Agente contra `main` |
 | **GCLB HTTPS + Redirect 301 (`.nip.io`)** | `https://calculadora-simples-frontend.<gclb_ip>.nip.io` (SPA GCS BackendBucket, zero container) / `https://calculadora-simples-backend.<gclb_ip>.nip.io` (BFF) / `https://calculadora-simples-api.<gclb_ip>.nip.io` (API) | Redirect HTTP->HTTPS `301` + Certificado SSL Certificate Manager + Cloud Armor WAF |
 | **Pub/Sub Isolado & Serverless** | `calculadora-simples-events`, `calculadora-simples-dlq` | Tópicos + DLQ isolados por projeto + suporte a Cloud Run Functions v2 |
@@ -24,11 +24,11 @@
 | **Tempo de Vida (`ttl`)** | **`1h` (60 minutos)** | Autodestruição automática dos workloads ao expirar o relógio |
 | **Modo de Descomissionamento** | `terraform_destroy_workload_only` | **Remove apenas os workloads e rotas GCLB da app**; preserva projeto `detran-gemini`, GCLB/DB singletons, `main` e repositório Git |
 | **Veredito Gatekeeper SARIF** | `PASS` | OWASP Top 10 + 5 Regras de Segurança IA/LGPD |
-| **Solicitante** | `lucas.cesario@detran.sp.gov.br` | Registrado em `2026-11-19T22:18:23Z` |
+| **Solicitante** | `lucas.cesario@detran.sp.gov.br` | Registrado em `2026-11-19T23:10:41Z` |
 
 ## 2. Justificativa Executiva / Negócio
 
-Calculadora institucional para conferência e histórico auditável de operações aritméticas no DETRAN-SP.
+Calculadora básica clássica com botões numéricos 0-9, quatro operações (+, -, *, /), display digital e fita de histórico.
 
 ## 3. Como Aprovar ou Rejeitar
 
