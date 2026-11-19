@@ -6,8 +6,8 @@
   "solution_repo": "todo-list-app",
   "git_branch": "gcp/sandbox",
   "git_tag": "GCP_DEPLOYED_VERSION",
-  "expected_commit_sha": "8ef7fc0e0f4f82f68179f2289644b3fb4e20116b",
-  "source_commit_sha": "8ef7fc0e0f4f82f68179f2289644b3fb4e20116b",
+  "expected_commit_sha": "75cdb7c6ca4fec40bb9f0c30d084664e480bfb69",
+  "source_commit_sha": "75cdb7c6ca4fec40bb9f0c30d084664e480bfb69",
   "commits_ahead_of_main": 1,
   "commits_behind_main": 0,
   "compare_against_main_url": "https://github.com/detran-automation-dev/todo-list-app/compare/main...GCP_DEPLOYED_VERSION",
@@ -130,8 +130,8 @@
   "sarif_security_verdict": "PASS",
   "approval_status": "APPROVED_ON_MERGE",
   "requested_by": "wagner.silva@detran.sp.gov.br",
-  "requested_at_utc": "2026-11-19T12:48:52Z",
-  "business_justification": "App corporativo de gestão de tarefas e demandas operacionais DETRAN-SP conforme padrões oficiais DTI/DETRAN-SP.",
+  "requested_at_utc": "2026-11-19T22:16:27Z",
+  "business_justification": "Gestor de Tarefas e Produtividade Operacional padrão de mercado para acompanhamento ágil de fluxos de trabalho, demandas prioritárias e metas institucionais.",
   "dti_standard_exception_justification": "",
   "integrity_seal": {
     "version": "1.0",
@@ -158,8 +158,8 @@
       "teardown_mode",
       "sarif_security_verdict"
     ],
-    "canonical_payload_sha256": "c8d9cb6ab2c9275c397666555b6ba8211b1c9e05ccccc5af3ce1540a629a25fa",
-    "companion_docs_sha256": "2297fcd5f8b6be89583b6cdd0dde989a89a4b548abb16cf60d3de21df5543277",
-    "hmac_sha256_signature": "304ad73fbe30ee89c3deb2c020bd671500548ded86cb9cdf2d11429ac2f38f21"
+    "canonical_payload_sha256": "7f721d3b89ff138055b559dee9a3b200316723f050acb0022d78c1a0e5107802",
+    "companion_docs_sha256": "ab8e827d45c541fa28361b37b49b86b999ddc0cc8c377eb0c371c761911d029d",
+    "hmac_sha256_signature": "3e0b41351a456a69a4c2d4c5753325a3b3eb949500294669e3b64a2b789ecce5"
   }
 }

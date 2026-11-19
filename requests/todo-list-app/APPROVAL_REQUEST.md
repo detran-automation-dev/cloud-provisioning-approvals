@@ -12,7 +12,7 @@
 | **Workload Slug** | `todo-list-app` | Identificador isolado de GCS SPA, Cloud Run v2, Pub/Sub, DB lógico e TF State |
 | **Repositório da Aplicação** | `detran-automation-dev/todo-list-app` | Branch `main` preservada 100% intocada |
 | **Branch & Tag de Deploy** | `gcp/sandbox` / **`GCP_DEPLOYED_VERSION`** | Checkout estrito na tag `GCP_DEPLOYED_VERSION` |
-| **Trava SHA Anti-Tampering** | `8ef7fc0e0f4f82f68179f2289644b3fb4e20116b` | Abortará o deploy se `GCP_DEPLOYED_VERSION` divergir deste SHA |
+| **Trava SHA Anti-Tampering** | `75cdb7c6ca4fec40bb9f0c30d084664e480bfb69` | Abortará o deploy se `GCP_DEPLOYED_VERSION` divergir deste SHA |
 | **Diff vs `main` (`ahead/behind`)** | [`1 ahead` / `0 behind` `main`](https://github.com/detran-automation-dev/todo-list-app/compare/main...GCP_DEPLOYED_VERSION) | Visibilidade integral das alterações do Agente contra `main` |
 | **GCLB HTTPS + Redirect 301 (`.nip.io`)** | `https://todo-list-app-frontend.<gclb_ip>.nip.io` (SPA GCS BackendBucket, zero container) / `https://todo-list-app-backend.<gclb_ip>.nip.io` (BFF) / `https://todo-list-app-api.<gclb_ip>.nip.io` (API) | Redirect HTTP->HTTPS `301` + Certificado SSL Certificate Manager + Cloud Armor WAF |
 | **Pub/Sub Isolado & Serverless** | `todo-list-app-events`, `todo-list-app-dlq` | Tópicos + DLQ isolados por projeto + suporte a Cloud Run Functions v2 |
@@ -24,11 +24,11 @@
 | **Tempo de Vida (`ttl`)** | **`1h` (60 minutos)** | Autodestruição automática dos workloads ao expirar o relógio |
 | **Modo de Descomissionamento** | `terraform_destroy_workload_only` | **Remove apenas os workloads e rotas GCLB da app**; preserva projeto `detran-gemini`, GCLB/DB singletons, `main` e repositório Git |
 | **Veredito Gatekeeper SARIF** | `PASS` | OWASP Top 10 + 5 Regras de Segurança IA/LGPD |
-| **Solicitante** | `wagner.silva@detran.sp.gov.br` | Registrado em `2026-11-19T12:48:52Z` |
+| **Solicitante** | `wagner.silva@detran.sp.gov.br` | Registrado em `2026-11-19T22:16:27Z` |
 
 ## 2. Justificativa Executiva / Negócio
 
-App corporativo de gestão de tarefas e demandas operacionais DETRAN-SP conforme padrões oficiais DTI/DETRAN-SP.
+Gestor de Tarefas e Produtividade Operacional padrão de mercado para acompanhamento ágil de fluxos de trabalho, demandas prioritárias e metas institucionais.
 
 ## 3. Como Aprovar ou Rejeitar
 
