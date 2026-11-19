@@ -6,15 +6,15 @@
   "solution_repo": "todo-list-app",
   "git_branch": "gcp/sandbox",
   "git_tag": "GCP_DEPLOYED_VERSION",
-  "expected_commit_sha": "d571dd3e5761037ea36a96191900e6f4da12401c",
-  "source_commit_sha": "d571dd3e5761037ea36a96191900e6f4da12401c",
+  "expected_commit_sha": "bd7ba4df63f1f5893b25568428347ab3847347da",
+  "source_commit_sha": "bd7ba4df63f1f5893b25568428347ab3847347da",
   "commits_ahead_of_main": 1,
   "commits_behind_main": 0,
   "compare_against_main_url": "https://github.com/detran-automation-dev/todo-list-app/compare/main...GCP_DEPLOYED_VERSION",
   "target_gcp_project": "detran-gemini",
   "region": "southamerica-east1",
   "provisioner_service_account": "detran-workload-provisioner-sa@detran-gemini.iam.gserviceaccount.com",
-  "budget_brl": 100.0,
+  "budget_brl": 150.0,
   "ttl": "1h",
   "ttl_minutes": 60,
   "gclb_nip_io_edge_contract": {
@@ -130,8 +130,9 @@
   "sarif_security_verdict": "PASS",
   "approval_status": "APPROVED_ON_MERGE",
   "requested_by": "wagner.silva@detran.sp.gov.br",
-  "requested_at_utc": "2026-11-18T20:04:34Z",
-  "business_justification": "App de gerenciamento de tarefas To-Do List Full-Stack (React SPA + NestJS Prisma + PostgreSQL) com CRUD completo.",
+  "requested_at_utc": "2026-11-19T01:22:14Z",
+  "business_justification": "Implantação do Gestor de Tarefas e Demandas Operacionais DETRAN-SP (todo-list-app) com banco PostgreSQL 16 compartilhado (schema dedicado 'todo_list_app'), API REST NestJS 10 e frontend React 18 SPA.",
+  "dti_standard_exception_justification": "",
   "integrity_seal": {
     "version": "1.0",
     "algorithm": "HMAC-SHA256",
@@ -157,8 +158,8 @@
       "teardown_mode",
       "sarif_security_verdict"
     ],
-    "canonical_payload_sha256": "1cfe2ff80e22476a580405f37cda53afe782f2fea52b6f72631abcdedd914f67",
-    "companion_docs_sha256": "8a9851fa068e65843c78e0c1b49d49f44bd8b3ae65f4e719896b6e53cc259316",
-    "hmac_sha256_signature": "53948b26f3360fb209864b156cdbd997413e9c2c3c8c3162d75f4d675f41a683"
+    "canonical_payload_sha256": "7fa25d205961beec1c16a3459fa1f59270f08e03f5d5a883d661615c084ed247",
+    "companion_docs_sha256": "cb726b709f37421b0c0f41599d03ea6361505f419ef453d810bf8649ef2c6b9d",
+    "hmac_sha256_signature": "c0906cd079658ac09e75247921a47d0abfac6763ebbb53c3d64e65747fe52564"
   }
 }
