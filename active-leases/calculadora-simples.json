@@ -1,7 +1,7 @@
 {
   "workload_slug": "calculadora-simples",
   "short_slug": "calculadora-simples",
-  "status": "ACTIVE",
+  "status": "DECOMMISSIONED",
   "target_gcp_project": "detran-gemini",
   "region": "southamerica-east1",
   "github_org": "detran-automation-dev",
@@ -18,7 +18,7 @@
   "shared_redis_instance": "",
   "alert_emails": "wagner.silva@detran.sp.gov.br",
   "monitoring_dashboard_url": "https://console.cloud.google.com/monitoring/dashboards/builder/projects/881857743262/dashboards/70749b64-1070-475f-b43f-69b91ad2d8a9?project=detran-gemini",
-  "budget_brl": 100.00,
+  "budget_brl": 100.0,
   "ttl": "1h",
   "ttl_minutes": 60,
   "deployed_at_utc": "2026-11-20T03:20:05Z",
@@ -32,5 +32,7 @@
   "bff_url": "https://calculadora-simples-backend.136.68.168.106.nip.io",
   "api_url": "https://calculadora-simples-api.136.68.168.106.nip.io",
   "teardown_mode": "terraform_destroy_workload_only",
-  "terraform_state_uri": "gs://detran-gemini-provisioning-tfstate/workloads/calculadora-simples"
+  "terraform_state_uri": "gs://detran-gemini-provisioning-tfstate/workloads/calculadora-simples",
+  "decommissioned_at_utc": "2026-11-20T04:32:41Z",
+  "decommissioned_reason": "TTL_EXPIRED (1h)"
 }
