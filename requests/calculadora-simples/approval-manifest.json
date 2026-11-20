@@ -1,13 +1,13 @@
 {
   "schema_version": "1.3.0",
   "workload_slug": "calculadora-simples",
-  "request_type": "greenfield_new_project",
+  "request_type": "brownfield_repo_review",
   "github_org": "detran-automation-dev",
   "solution_repo": "calculadora-simples",
   "git_branch": "gcp/sandbox",
   "git_tag": "GCP_DEPLOYED_VERSION",
-  "expected_commit_sha": "8c2f095269b0bcc0fcf65856649f384a05585c85",
-  "source_commit_sha": "8c2f095269b0bcc0fcf65856649f384a05585c85",
+  "expected_commit_sha": "b013e907363cdd323f9e6601e6f8846f3963560b",
+  "source_commit_sha": "b013e907363cdd323f9e6601e6f8846f3963560b",
   "commits_ahead_of_main": 1,
   "commits_behind_main": 0,
   "compare_against_main_url": "https://github.com/detran-automation-dev/calculadora-simples/compare/main...GCP_DEPLOYED_VERSION",
@@ -115,7 +115,7 @@
   },
   "observability_sre": {
     "alert_emails": [
-      "lucas.cesario@detran.sp.gov.br"
+      "wagner.silva@detran.sp.gov.br"
     ],
     "slo_availability_goal": 0.995,
     "slo_latency_p95_ms": 1500,
@@ -129,9 +129,9 @@
   "teardown_mode": "terraform_destroy_workload_only",
   "sarif_security_verdict": "PASS",
   "approval_status": "APPROVED_ON_MERGE",
-  "requested_by": "lucas.cesario@detran.sp.gov.br",
-  "requested_at_utc": "2026-11-19T23:10:41Z",
-  "business_justification": "Calculadora básica clássica com botões numéricos 0-9, quatro operações (+, -, *, /), display digital e fita de histórico.",
+  "requested_by": "wagner.silva@detran.sp.gov.br",
+  "requested_at_utc": "2026-11-20T03:12:19Z",
+  "business_justification": "Republicação do app calculadora-simples em sandbox",
   "dti_standard_exception_justification": "",
   "integrity_seal": {
     "version": "1.0",
@@ -158,8 +158,8 @@
       "teardown_mode",
       "sarif_security_verdict"
     ],
-    "canonical_payload_sha256": "78f2780c8a3c350a136bccb1a2febecd21587644265d8bd66a68ba03d1d63818",
-    "companion_docs_sha256": "fa5128720e2bb7d65cfe87225882ecff179bf37e666dfd0079bc3ffef0023796",
-    "hmac_sha256_signature": "88f80f88b7cd4a43942a46d17a6a339f5efc304d1549cc4db1670475391c64f9"
+    "canonical_payload_sha256": "04f293f506e2da299d7d8599be9de2c112df7e84e650a5d01e10c617a626dd7e",
+    "companion_docs_sha256": "430be50ecf28e749851063c0e3baff5417555a55a13c14ef1dd11f008e5182bd",
+    "hmac_sha256_signature": "67a91a00cf619893f1c5ef794a18886f86d76e434e403b8372a6f91cc8764762"
   }
 }
