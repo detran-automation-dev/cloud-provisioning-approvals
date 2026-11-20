@@ -6,8 +6,8 @@
   "solution_repo": "cadastro-veiculos-crlv",
   "git_branch": "gcp/sandbox",
   "git_tag": "GCP_DEPLOYED_VERSION",
-  "expected_commit_sha": "7b5d92d0facf1dd038456470652473ef0b888045",
-  "source_commit_sha": "7b5d92d0facf1dd038456470652473ef0b888045",
+  "expected_commit_sha": "01905d04ff1949987825a4a7c541759a04bd9ec7",
+  "source_commit_sha": "01905d04ff1949987825a4a7c541759a04bd9ec7",
   "commits_ahead_of_main": 1,
   "commits_behind_main": 0,
   "compare_against_main_url": "https://github.com/detran-automation-dev/cadastro-veiculos-crlv/compare/main...GCP_DEPLOYED_VERSION",
@@ -130,8 +130,8 @@
   "sarif_security_verdict": "PASS",
   "approval_status": "APPROVED_ON_MERGE",
   "requested_by": "wagner.silva@detran.sp.gov.br",
-  "requested_at_utc": "2026-11-20T02:56:29Z",
-  "business_justification": "Evolução Day-2: Separação de campos Placa e RENAVAM, listagem enxuta de Placa, Marca e Modelo na tela principal e migração não-destrutiva no PostgreSQL.",
+  "requested_at_utc": "2026-11-20T03:14:13Z",
+  "business_justification": "Evolução v2.1: Placa e RENAVAM estritamente separados. Tabela principal focada exclusivamente em Placa, Marca e Modelo com banner de confirmação visual.",
   "dti_standard_exception_justification": "",
   "integrity_seal": {
     "version": "1.0",
@@ -158,8 +158,8 @@
       "teardown_mode",
       "sarif_security_verdict"
     ],
-    "canonical_payload_sha256": "ef592515e62791309dc1d600460225ec4b3dcc0eac4b201fae3863bc1eba054c",
-    "companion_docs_sha256": "ce4e284dead57e1830238c5cb65754317b71ba7b9f9892336b99a2e5af465a23",
-    "hmac_sha256_signature": "e0278f98a7bde1b3139ab6474eff265d2485bd6f89f77aef4fbbdb41e5e3172b"
+    "canonical_payload_sha256": "40e7f7eb2889e635498798f389a0fab6f24e9ba500d7e16982048752cda65f90",
+    "companion_docs_sha256": "a28056048decc6f0d554606d9039b5ce520dcfae0c6b597b385cc2fc6ff2b8db",
+    "hmac_sha256_signature": "3e6f0ed883ef482831ec11bb7ab5c6f7e1b2513d2665ce2e43aa2402bef4e92f"
   }
 }

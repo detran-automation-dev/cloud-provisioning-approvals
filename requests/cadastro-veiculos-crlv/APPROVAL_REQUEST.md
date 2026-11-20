@@ -12,7 +12,7 @@
 | **Workload Slug** | `cadastro-veiculos-crlv` | Identificador isolado de GCS SPA, Cloud Run v2, Pub/Sub, DB lógico e TF State |
 | **Repositório da Aplicação** | `detran-automation-dev/cadastro-veiculos-crlv` | Branch `main` preservada 100% intocada |
 | **Branch & Tag de Deploy** | `gcp/sandbox` / **`GCP_DEPLOYED_VERSION`** | Checkout estrito na tag `GCP_DEPLOYED_VERSION` |
-| **Trava SHA Anti-Tampering** | `7b5d92d0facf1dd038456470652473ef0b888045` | Abortará o deploy se `GCP_DEPLOYED_VERSION` divergir deste SHA |
+| **Trava SHA Anti-Tampering** | `01905d04ff1949987825a4a7c541759a04bd9ec7` | Abortará o deploy se `GCP_DEPLOYED_VERSION` divergir deste SHA |
 | **Diff vs `main` (`ahead/behind`)** | [`1 ahead` / `0 behind` `main`](https://github.com/detran-automation-dev/cadastro-veiculos-crlv/compare/main...GCP_DEPLOYED_VERSION) | Visibilidade integral das alterações do Agente contra `main` |
 | **GCLB HTTPS + Redirect 301 (`.nip.io`)** | `https://cadastro-veiculos-crlv-frontend.<gclb_ip>.nip.io` (SPA GCS BackendBucket, zero container) / `https://cadastro-veiculos-crlv-backend.<gclb_ip>.nip.io` (BFF) / `https://cadastro-veiculos-crlv-api.<gclb_ip>.nip.io` (API) | Redirect HTTP->HTTPS `301` + Certificado SSL Certificate Manager + Cloud Armor WAF |
 | **Pub/Sub Isolado & Serverless** | `cadastro-veiculos-crlv-events`, `cadastro-veiculos-crlv-dlq` | Tópicos + DLQ isolados por projeto + suporte a Cloud Run Functions v2 |
@@ -24,11 +24,11 @@
 | **Tempo de Vida (`ttl`)** | **`1h` (60 minutos)** | Autodestruição automática dos workloads ao expirar o relógio |
 | **Modo de Descomissionamento** | `terraform_destroy_workload_only` | **Remove apenas os workloads e rotas GCLB da app**; preserva projeto `detran-gemini`, GCLB/DB singletons, `main` e repositório Git |
 | **Veredito Gatekeeper SARIF** | `PASS` | OWASP Top 10 + 5 Regras de Segurança IA/LGPD |
-| **Solicitante** | `wagner.silva@detran.sp.gov.br` | Registrado em `2026-11-20T02:56:29Z` |
+| **Solicitante** | `wagner.silva@detran.sp.gov.br` | Registrado em `2026-11-20T03:14:13Z` |
 
 ## 2. Justificativa Executiva / Negócio
 
-Evolução Day-2: Separação de campos Placa e RENAVAM, listagem enxuta de Placa, Marca e Modelo na tela principal e migração não-destrutiva no PostgreSQL.
+Evolução v2.1: Placa e RENAVAM estritamente separados. Tabela principal focada exclusivamente em Placa, Marca e Modelo com banner de confirmação visual.
 
 ## 3. Como Aprovar ou Rejeitar
 

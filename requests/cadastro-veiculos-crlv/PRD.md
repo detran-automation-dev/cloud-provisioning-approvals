@@ -4,7 +4,7 @@
 
 - **Aplicação**: **Gestão de Veículos e Emissão de CRLV-e** (`cadastro-veiculos-crlv`)
 - **Subtítulo Funcional**: Controle cadastral, vistorias e regularização de licenciamento veicular.
-- **Demanda / Justificativa**: Evolução incremental Day-2: Separação estrita dos campos Placa, RENAVAM, Marca e Modelo no formulário e no modelo de dados. Na tela principal (tabela e cards), exibir resumidamente apenas Placa, Marca e Modelo além do badge de status e ações em 1 clique, mantendo Chassi, Combustível e Restrições acessíveis no modal de detalhes. Preservar o histórico Git e registros no schema 'cadastro_veiculos_crlv' via migração não-destrutiva.
+- **Demanda / Justificativa**: CADASTRO DE VEÍCULOS CRLV-e COM CAMPOS SEPARADOS E TELA PRINCIPAL RESTRITA: 1. CAMPOS DEDICADOS E SEPARADOS NO FORMULÁRIO E BANCO: Placa (campo próprio), Código RENAVAM (campo próprio separado de 11 dígitos), Marca (campo próprio), Modelo (campo próprio), Chassi VIN (campo próprio), Combustível (select próprio) e Restrições Administrativas. 2. TELA PRINCIPAL (TABELA E CARDS): Listar ESTRITAMENTE Placa, Marca e Modelo como colunas/identificadores visíveis na tabela principal, acompanhados de Status Badge e Ações rápidas. Os demais campos (Renavam, Chassi, Combustível, Restrições) ficam acessíveis exclusivamente dentro do Modal de Detalhes e Edição. 3. BANCO POSTGRESQL: Cloud SQL schema cadastro_veiculos_crlv com migração aditiva sql/002_evolution_delta.sql preservando registros existentes.
 - **Entidade Principal de Domínio**: `Veículo` / `Veículos`
 - **Isolamento de Dados**: Cloud SQL PostgreSQL compartilhado (`detran-shared-pgsql`), database `db_cadastro_veiculos_crlv`, schema exclusivo `cadastro_veiculos_crlv` (zero uso de `public`).
 
@@ -15,7 +15,8 @@
 - **RN-003**: Transição para status REGULARIZADO exige ausência de impedimentos e vistoria veicular aprovada.
 - **RN-004**: Endpoints REST autenticados com controle RBAC específico para o perfil servidor_interno.
 - **RN-005**: Evolução incremental Day-2 preservando schema 'cadastro_veiculos_crlv' e registros ativos: campos adicionados (Cadastro_veiculos_crlv).
-- **RN-006 [LGPD & GOVERNANÇA]**: Nenhum dado pessoal sensível sem mascaramento em telas ou logs; autenticação e borda protegidas por GCLB HTTPS + Cloud Armor WAF.
+- **RN-006**: Evolução incremental Day-2 preservando schema 'cadastro_veiculos_crlv' e registros ativos: campos adicionados (Próprio, Próprio separado de 11 dígitos).
+- **RN-007 [LGPD & GOVERNANÇA]**: Nenhum dado pessoal sensível sem mascaramento em telas ou logs; autenticação e borda protegidas por GCLB HTTPS + Cloud Armor WAF.
 
 ## 3. Histórias de Usuário em Formato Gherkin (INVEST)
 
@@ -25,7 +26,7 @@ Funcionalidade: Painel de Gestão de Veículos
   Cenário: Carregamento inicial da tela com indicadores e registros do PostgreSQL
     Dado que o operador acessa o portal "Gestão de Veículos e Emissão de CRLV-e" via HTTPS (.nip.io)
     Quando a aplicação consulta GET /api/items e GET /api/status na mesma origem
-    Então a interface exibe os 4 indicadores KPI consolidados e os 7 registros iniciais do schema "cadastro_veiculos_crlv"
+    Então a interface exibe os 4 indicadores KPI consolidados e os 8 registros iniciais do schema "cadastro_veiculos_crlv"
     E permite filtrar por busca textual, status (`EM_ANALISE` (Em Análise Documental), `PENDENTE_VISTORIA` (Pendente de Vistoria), `REGULARIZADO` (Regularizado)), prioridade e categoria
 ```
 
@@ -63,6 +64,8 @@ Funcionalidade: Ciclo de Vida de Veículo
 | `combustivel_propulsao` | Tipo de Combustível | `select` | Sim |
 | `restricoes_administrativas` | Restrições Financeiras ou Administrativas | `textarea` | Não |
 | `cadastro_veiculos_crlv` | Cadastro_veiculos_crlv | `text` | Não |
+| `proprio` | Próprio | `text` | Não |
+| `proprio_separado_de_11_digitos` | Próprio separado de 11 dígitos | `text` | Não |
 
 ## 5. Contrato de Endpoints REST da API (Node.js 22 + Cloud Run v2)
 
@@ -75,7 +78,7 @@ Funcionalidade: Ciclo de Vida de Veículo
 | `PATCH /api/items/:id` | Atualiza status, flag `concluido` ou campos do registro | `200 OK` |
 | `DELETE /api/items/:id` | Remove registro por UUID | `200 OK` |
 
-## 6. Esquema PostgreSQL & Massa Inicial (`seed` de 7 registros)
+## 6. Esquema PostgreSQL & Massa Inicial (`seed` de 8 registros)
 
 Tabela `cadastro_veiculos_crlv.registros` inicializada automaticamente no boot da API via `sql/001_init_and_seed.sql`:
 
@@ -88,6 +91,7 @@ Tabela `cadastro_veiculos_crlv.registros` inicializada automaticamente no boot d
 | `CRLVS-1005` | Honda HR-V Touring 1.5 | `EM_ANALISE` | `MEDIA` | Particular | Núcleo de Análise Cadastral |
 | `CRLVS-1006` | Scania R450 6x2 | `REGULARIZADO` | `ALTA` | Transporte Coletivo / Carga | Setor de Vistoria de Veículos Pesados |
 | `CRLVS-1007` | Entrega Incremental #7 — Cadastro_veiculos_crlv | `PENDENTE_VISTORIA` | `ALTA` | Particular | Coordenação de Arquitetura DTI |
+| `CRLVS-1008` | Entrega Incremental #8 — Próprio | `PENDENTE_VISTORIA` | `ALTA` | Particular | Coordenação de Arquitetura DTI |
 
 ## 7. Parâmetros de Governança no Sandbox (`detran-gemini`)
 
