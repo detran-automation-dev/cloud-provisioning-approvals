@@ -4,7 +4,7 @@
 
 - **Aplicação**: **Gestão de Veículos e Emissão de CRLV-e** (`cadastro-veiculos-crlv`)
 - **Subtítulo Funcional**: Controle cadastral, vistorias e regularização de licenciamento veicular.
-- **Demanda / Justificativa**: Cadastro e licenciamento de veículos com base nos principais campos do CRLV-e: Placa, RENAVAM, Chassi, Marca/Modelo, Ano Fab/Mod, Combustível, Restrições e Proprietário. Painel de controle com 4 KPIs, listagem com busca e filtros por status (EM_ANALISE, PENDENTE_VISTORIA, REGULARIZADO) e categoria, alternância Tabela/Cards, formulário validado, endpoints REST em NestJS 10 + Prisma e persistência relacional no Cloud SQL PostgreSQL schema 'cadastro_veiculos_crlv'.
+- **Demanda / Justificativa**: Evolução incremental Day-2: Separação estrita dos campos Placa, RENAVAM, Marca e Modelo no formulário e no modelo de dados. Na tela principal (tabela e cards), exibir resumidamente apenas Placa, Marca e Modelo além do badge de status e ações em 1 clique, mantendo Chassi, Combustível e Restrições acessíveis no modal de detalhes. Preservar o histórico Git e registros no schema 'cadastro_veiculos_crlv' via migração não-destrutiva.
 - **Entidade Principal de Domínio**: `Veículo` / `Veículos`
 - **Isolamento de Dados**: Cloud SQL PostgreSQL compartilhado (`detran-shared-pgsql`), database `db_cadastro_veiculos_crlv`, schema exclusivo `cadastro_veiculos_crlv` (zero uso de `public`).
 
@@ -14,7 +14,8 @@
 - **RN-002**: Validação rígida de formato de placa Mercosul (3 letras, 1 número, 1 letra, 2 números) e RENAVAM de 11 dígitos.
 - **RN-003**: Transição para status REGULARIZADO exige ausência de impedimentos e vistoria veicular aprovada.
 - **RN-004**: Endpoints REST autenticados com controle RBAC específico para o perfil servidor_interno.
-- **RN-005 [LGPD & GOVERNANÇA]**: Nenhum dado pessoal sensível sem mascaramento em telas ou logs; autenticação e borda protegidas por GCLB HTTPS + Cloud Armor WAF.
+- **RN-005**: Evolução incremental Day-2 preservando schema 'cadastro_veiculos_crlv' e registros ativos: campos adicionados (Cadastro_veiculos_crlv).
+- **RN-006 [LGPD & GOVERNANÇA]**: Nenhum dado pessoal sensível sem mascaramento em telas ou logs; autenticação e borda protegidas por GCLB HTTPS + Cloud Armor WAF.
 
 ## 3. Histórias de Usuário em Formato Gherkin (INVEST)
 
@@ -24,7 +25,7 @@ Funcionalidade: Painel de Gestão de Veículos
   Cenário: Carregamento inicial da tela com indicadores e registros do PostgreSQL
     Dado que o operador acessa o portal "Gestão de Veículos e Emissão de CRLV-e" via HTTPS (.nip.io)
     Quando a aplicação consulta GET /api/items e GET /api/status na mesma origem
-    Então a interface exibe os 4 indicadores KPI consolidados e os 6 registros iniciais do schema "cadastro_veiculos_crlv"
+    Então a interface exibe os 4 indicadores KPI consolidados e os 7 registros iniciais do schema "cadastro_veiculos_crlv"
     E permite filtrar por busca textual, status (`EM_ANALISE` (Em Análise Documental), `PENDENTE_VISTORIA` (Pendente de Vistoria), `REGULARIZADO` (Regularizado)), prioridade e categoria
 ```
 
@@ -61,6 +62,7 @@ Funcionalidade: Ciclo de Vida de Veículo
 | `chassi_completo` | Número do Chassi (VIN) | `text` | Sim |
 | `combustivel_propulsao` | Tipo de Combustível | `select` | Sim |
 | `restricoes_administrativas` | Restrições Financeiras ou Administrativas | `textarea` | Não |
+| `cadastro_veiculos_crlv` | Cadastro_veiculos_crlv | `text` | Não |
 
 ## 5. Contrato de Endpoints REST da API (Node.js 22 + Cloud Run v2)
 
@@ -73,7 +75,7 @@ Funcionalidade: Ciclo de Vida de Veículo
 | `PATCH /api/items/:id` | Atualiza status, flag `concluido` ou campos do registro | `200 OK` |
 | `DELETE /api/items/:id` | Remove registro por UUID | `200 OK` |
 
-## 6. Esquema PostgreSQL & Massa Inicial (`seed` de 6 registros)
+## 6. Esquema PostgreSQL & Massa Inicial (`seed` de 7 registros)
 
 Tabela `cadastro_veiculos_crlv.registros` inicializada automaticamente no boot da API via `sql/001_init_and_seed.sql`:
 
@@ -85,6 +87,7 @@ Tabela `cadastro_veiculos_crlv.registros` inicializada automaticamente no boot d
 | `CRLVS-1004` | Chevrolet Onix Plus 1.0 Turbo | `REGULARIZADO` | `BAIXA` | Aluguel / Comercial | Divisão de Frotas e Locadoras |
 | `CRLVS-1005` | Honda HR-V Touring 1.5 | `EM_ANALISE` | `MEDIA` | Particular | Núcleo de Análise Cadastral |
 | `CRLVS-1006` | Scania R450 6x2 | `REGULARIZADO` | `ALTA` | Transporte Coletivo / Carga | Setor de Vistoria de Veículos Pesados |
+| `CRLVS-1007` | Entrega Incremental #7 — Cadastro_veiculos_crlv | `PENDENTE_VISTORIA` | `ALTA` | Particular | Coordenação de Arquitetura DTI |
 
 ## 7. Parâmetros de Governança no Sandbox (`detran-gemini`)
 

@@ -6,8 +6,8 @@
   "solution_repo": "cadastro-veiculos-crlv",
   "git_branch": "gcp/sandbox",
   "git_tag": "GCP_DEPLOYED_VERSION",
-  "expected_commit_sha": "891ff53bdfdcf78bdc7ff3291ca1e5a43a4be84c",
-  "source_commit_sha": "891ff53bdfdcf78bdc7ff3291ca1e5a43a4be84c",
+  "expected_commit_sha": "7b5d92d0facf1dd038456470652473ef0b888045",
+  "source_commit_sha": "7b5d92d0facf1dd038456470652473ef0b888045",
   "commits_ahead_of_main": 1,
   "commits_behind_main": 0,
   "compare_against_main_url": "https://github.com/detran-automation-dev/cadastro-veiculos-crlv/compare/main...GCP_DEPLOYED_VERSION",
@@ -130,8 +130,8 @@
   "sarif_security_verdict": "PASS",
   "approval_status": "APPROVED_ON_MERGE",
   "requested_by": "wagner.silva@detran.sp.gov.br",
-  "requested_at_utc": "2026-11-20T02:31:56Z",
-  "business_justification": "App de Gestão de Cadastro e Licenciamento Veicular (CRLV-e) com campos do documento, 4 KPIs, validações rígidas de domínio e persistência no PostgreSQL schema cadastro_veiculos_crlv.",
+  "requested_at_utc": "2026-11-20T02:56:29Z",
+  "business_justification": "Evolução Day-2: Separação de campos Placa e RENAVAM, listagem enxuta de Placa, Marca e Modelo na tela principal e migração não-destrutiva no PostgreSQL.",
   "dti_standard_exception_justification": "",
   "integrity_seal": {
     "version": "1.0",
@@ -158,8 +158,8 @@
       "teardown_mode",
       "sarif_security_verdict"
     ],
-    "canonical_payload_sha256": "7ae619f5b73cf57e1b27be270cb6e84c7c6c3c9a6124cb80fc87bfb9163a72e3",
-    "companion_docs_sha256": "6c5423d63e0dc1810bc803d1c899d2fb5893400b35b34432dc960105cb3f1b52",
-    "hmac_sha256_signature": "82d83c975c6c762c30c1396a21f0f08814c766b374b211d647745a84f438726f"
+    "canonical_payload_sha256": "ef592515e62791309dc1d600460225ec4b3dcc0eac4b201fae3863bc1eba054c",
+    "companion_docs_sha256": "ce4e284dead57e1830238c5cb65754317b71ba7b9f9892336b99a2e5af465a23",
+    "hmac_sha256_signature": "e0278f98a7bde1b3139ab6474eff265d2485bd6f89f77aef4fbbdb41e5e3172b"
   }
 }
