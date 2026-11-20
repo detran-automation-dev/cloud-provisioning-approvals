@@ -5,6 +5,11 @@ on:
     branches: [main]
     paths:
       - "teardown-triggers/**"
+  schedule:
+    # Rede de segurança FinOps (a cada hora): varre leases vencidos e para/remove a infraestrutura
+    # compartilhada que ficou sem nenhum workload (scripts/reap_idle_shared_backing.py). O caminho
+    # principal é o próprio teardown: o último workload removido já para/remove tudo nesta execução.
+    - cron: "41 * * * *"
   workflow_dispatch:
     inputs:
       workload_slug:
@@ -22,6 +27,11 @@ on:
         required: false
         default: "false"
         type: string
+      reap_idle_dry_run:
+        description: "FinOps: 'true' = execução só de relatório (o reaper apenas relata e o teardown de TTL NÃO roda nesta execução)"
+        required: false
+        default: "false"
+        type: string
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
@@ -29,6 +39,7 @@ env:
 permissions:
   contents: write
   id-token: write
+  actions: read
 
 concurrency:
   group: ttl-teardown-detran-gemini
@@ -49,9 +60,14 @@ jobs:
         env:
           TARGET_SLUG: ${{ github.event.inputs.workload_slug || '' }}
           FORCE_NOW: ${{ github.event.inputs.force_now || 'false' }}
+          REPORT_ONLY: ${{ github.event.inputs.reap_idle_dry_run || 'false' }}
         run: |
           python3 - <<'PY' >> "$GITHUB_OUTPUT"
-          import datetime, glob, json, os
+          import datetime, glob, json, os, sys
+          if os.environ.get("REPORT_ONLY", "false").strip().lower() == "true":
+              print("Execução só de relatório (reap_idle_dry_run=true): teardown de TTL ignorado.", file=sys.stderr)
+              print("needs_teardown=false")
+              raise SystemExit(0)
           now_epoch = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
           target = os.environ.get("TARGET_SLUG", "").strip()
           force = os.environ.get("FORCE_NOW", "false").strip().lower() == "true"
@@ -72,15 +88,16 @@ jobs:
           print(f"needs_teardown={'true' if needs_run else 'false'}")
           PY
 
+      # Autenticação em toda execução: o teardown só roda quando há lease vencido, mas o FinOps idle
+      # reaper (último passo) sempre precisa consultar o projeto.
       - name: Authenticate to Google Cloud (detran-gemini) via Keyless OIDC WIF
-        if: steps.check.outputs.needs_teardown == 'true'
+        id: auth
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: "projects/881857743262/locations/global/workloadIdentityPools/github-approvals-pool/providers/github-oidc-approvals"
           service_account: "detran-workload-provisioner-sa@detran-gemini.iam.gserviceaccount.com"
 
       - name: Set up Google Cloud SDK
-        if: steps.check.outputs.needs_teardown == 'true'
         uses: google-github-actions/setup-gcloud@v2
 
       - name: Set up Terraform
@@ -115,3 +132,25 @@ jobs:
             git pull --rebase "https://x-access-token:${GH_PAT}@github.com/${GITHUB_REPOSITORY}.git" main
             git push "https://x-access-token:${GH_PAT}@github.com/${GITHUB_REPOSITORY}.git" HEAD:main
           fi
+
+      # FinOps (carência 0: o último teardown já zera a infraestrutura compartilhada nesta execução):
+      # Cloud SQL singleton sem nenhum workload é PARADO (activation-policy NEVER, nunca apagado: evita a
+      # reserva de nome de ~7 dias); Memorystore Redis ocioso é apagado; sem nenhum workload (0 leases em
+      # uso, 0 provisionamentos, 0 hostRules) o GCLB compartilhado inteiro (forwarding rules, proxies,
+      # URL maps, bucket de fallback, IP global, Certificate Map, certificado bootstrap) é removido.
+      # Qualquer dúvida = nada é feito (falha de consulta sai com código 3 para ficar visível). O próximo
+      # deploy religa/recria tudo automaticamente (scripts/provision_workload.sh + Terraform).
+      # Chaves sem mudar código (Settings > Variables): FINOPS_REAPER_ENABLED=false desliga este passo;
+      # FINOPS_REAPER_DRY_RUN=true força só relatório.
+      - name: FinOps — Stop/Remove Idle Shared Infra (DB servers, Redis, GCLB) when no workload uses them
+        id: reap
+        if: ${{ !cancelled() && steps.auth.outcome == 'success' && vars.FINOPS_REAPER_ENABLED != 'false' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REAP_DRY_RUN: ${{ (github.event.inputs.reap_idle_dry_run == 'true' || vars.FINOPS_REAPER_DRY_RUN == 'true') && 'true' || 'false' }}
+        run: |
+          python3 scripts/reap_idle_shared_backing.py \
+            --project "detran-gemini" \
+            --dry-run "${REAP_DRY_RUN}" \
+            --grace-minutes "0" \
+            --github-output "$GITHUB_OUTPUT"

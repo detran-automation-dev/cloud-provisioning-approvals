@@ -3,7 +3,8 @@
 # Deterministic Workload Provisioner (Post-Approval GitHub Actions Executor)
 # Enforces mandatory BUDGET_BRL, TTL_MINUTES, ALERT_EMAILS_CSV, and Dual-Pinning
 # Anti-Tampering Lock (GIT_TAG == GCP_DEPLOYED_VERSION && SHA == EXPECTED_COMMIT_SHA),
-# reconciles Singleton Shared GCLB + DB/Redis, builds API/BFF container(s) and
+# reconciles Singleton Shared GCLB + DB/Redis (auto-resuming a shared DB server
+# stopped by the FinOps idle reaper before Terraform), builds API/BFF container(s) and
 # Static SPA bundle (zero container for frontend!), applies Terraform, syncs
 # static SPA assets to GCS BackendBucket, registers .nip.io hostRules on GCLB,
 # waits until the managed SSL certificate and the HTTPS routes answer with trusted
@@ -115,6 +116,22 @@ print("[SARIF-GATE] Relatorio SARIF v2.1.0 validado na branch gcp/sandbox (0 vul
 PY
 fi
 
+# FinOps: servidores de banco singleton sem nenhum workload são PARADOS pelo idle reaper
+# (scripts/reap_idle_shared_backing.py, activation-policy=NEVER). Antes do build já disparamos o
+# religamento (activation-policy=ALWAYS) para que a partida (alguns minutos) corra em paralelo ao
+# Cloud Build; o passo [4/8] espera o servidor ficar RUNNABLE antes do Terraform.
+SHARED_DB_RESUME_DRY_RUN="${SHARED_DB_RESUME_DRY_RUN:-false}"
+SHARED_DB_RESUME_TIMEOUT_SECONDS="${SHARED_DB_RESUME_TIMEOUT_SECONDS:-600}"
+echo "=== [2.8/8] FinOps: religando o servidor de banco singleton (${DATABASE_TYPE}) se estiver parado por ociosidade ==="
+python3 "${APPROVALS_ROOT}/scripts/reap_idle_shared_backing.py" resume \
+  --project="${TARGET_GCP_PROJECT}" \
+  --engine="${DATABASE_TYPE}" \
+  --enable-redis="${ENABLE_REDIS,,}" \
+  --region="${REGION}" \
+  --phase=begin \
+  --dry-run="${SHARED_DB_RESUME_DRY_RUN}" \
+  || echo "::warning::[SHARED-DB-RESUME] Verificação antecipada falhou; será repetida antes do Terraform."
+
 echo "=== [3/8] Building Backend/API Container(s) & Static SPA GCS Bundle in Cloud Build ==="
 API_IMAGE="${AR_REPO}/${WORKLOAD_SLUG}-api:${SHORT_SHA}"
 BFF_IMAGE="${AR_REPO}/${WORKLOAD_SLUG}-bff:${SHORT_SHA}"
@@ -141,6 +158,22 @@ else
 fi
 
 echo "=== [4/8] Initializing Terraform & Reconciling Shared Singleton GCLB / DB / Redis State ==="
+# Religamento automático (FinOps), ANTES de publicar bundle/vars no GCS (um timeout aqui não deixa um
+# bundle novo com vars.json antigo para o teardown): o google_sql_database da aplicação só pode ser criado
+# com o servidor singleton em execução. Se ele foi parado por ociosidade (activation-policy=NEVER),
+# religamos (ALWAYS) e esperamos RUNNABLE; um Redis ainda em remoção (DELETING) é aguardado até sumir,
+# para o Terraform recriá-lo. Uma instância parada continua "existente" para o reconcile_shared_state.sh
+# (gcloud sql instances describe responde normalmente), que importa o state como sempre; o Terraform gerado
+# ignora `settings` (lifecycle.ignore_changes), então não desfaz o activation_policy.
+python3 "${APPROVALS_ROOT}/scripts/reap_idle_shared_backing.py" resume \
+  --project="${TARGET_GCP_PROJECT}" \
+  --engine="${DATABASE_TYPE}" \
+  --enable-redis="${ENABLE_REDIS,,}" \
+  --region="${REGION}" \
+  --phase=wait \
+  --timeout-seconds="${SHARED_DB_RESUME_TIMEOUT_SECONDS}" \
+  --dry-run="${SHARED_DB_RESUME_DRY_RUN}"
+
 TF_BUNDLE="/tmp/tf-bundle-${WORKLOAD_SLUG}.tar.gz"
 tar -czf "${TF_BUNDLE}" -C "${SRC_DIR}" infra/terraform functions 2>/dev/null || tar -czf "${TF_BUNDLE}" -C "${SRC_DIR}" infra/terraform
 gcloud storage cp "${TF_BUNDLE}" "gs://${TF_BUCKET}/workloads/${WORKLOAD_SLUG}/tf-bundle.tar.gz" --project="${TARGET_GCP_PROJECT}" --quiet
@@ -333,6 +366,7 @@ cat <<EOF > "${APPROVALS_ROOT}/active-leases/${WORKLOAD_SLUG}.json"
   "database_type": "${DATABASE_TYPE}",
   "shared_sql_instance": "${SHARED_SQL}",
   "shared_redis_instance": "${SHARED_REDIS}",
+  "enable_redis": $([[ "${ENABLE_REDIS,,}" == "true" ]] && echo true || echo false),
   "alert_emails": "${ALERT_EMAILS_CSV}",
   "monitoring_dashboard_url": "${DASHBOARD_URL}",
   "budget_brl": ${BUDGET_BRL},
