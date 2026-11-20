@@ -1,13 +1,13 @@
 {
   "schema_version": "1.3.0",
   "workload_slug": "calculadora-simples",
-  "request_type": "brownfield_repo_review",
+  "request_type": "greenfield_new_project",
   "github_org": "detran-automation-dev",
   "solution_repo": "calculadora-simples",
   "git_branch": "gcp/sandbox",
   "git_tag": "GCP_DEPLOYED_VERSION",
-  "expected_commit_sha": "b013e907363cdd323f9e6601e6f8846f3963560b",
-  "source_commit_sha": "b013e907363cdd323f9e6601e6f8846f3963560b",
+  "expected_commit_sha": "9099121e92c334c3fecef0abd14fff107e966975",
+  "source_commit_sha": "9099121e92c334c3fecef0abd14fff107e966975",
   "commits_ahead_of_main": 1,
   "commits_behind_main": 0,
   "compare_against_main_url": "https://github.com/detran-automation-dev/calculadora-simples/compare/main...GCP_DEPLOYED_VERSION",
@@ -130,8 +130,8 @@
   "sarif_security_verdict": "PASS",
   "approval_status": "APPROVED_ON_MERGE",
   "requested_by": "wagner.silva@detran.sp.gov.br",
-  "requested_at_utc": "2026-11-20T03:12:19Z",
-  "business_justification": "Republicação do app calculadora-simples em sandbox",
+  "requested_at_utc": "2026-11-20T03:54:15Z",
+  "business_justification": "Evolução incremental Day-2: implementação de calculadora funcional com 4 operações básicas e histórico persistente",
   "dti_standard_exception_justification": "",
   "integrity_seal": {
     "version": "1.0",
@@ -158,8 +158,8 @@
       "teardown_mode",
       "sarif_security_verdict"
     ],
-    "canonical_payload_sha256": "04f293f506e2da299d7d8599be9de2c112df7e84e650a5d01e10c617a626dd7e",
-    "companion_docs_sha256": "430be50ecf28e749851063c0e3baff5417555a55a13c14ef1dd11f008e5182bd",
-    "hmac_sha256_signature": "67a91a00cf619893f1c5ef794a18886f86d76e434e403b8372a6f91cc8764762"
+    "canonical_payload_sha256": "4a42ef3ae7a6136a841115144284e52253285c44273755d13c3b60ea7f46d40c",
+    "companion_docs_sha256": "3d2d98233040fe64cf14af9b4e18a1b7d0d9cb4dac4ee03627b2ab5bfd2eff47",
+    "hmac_sha256_signature": "cd3eaf4d378ae4929bb74b9991d0916e7bac622a4ec232c3ef810b3bcd0835e1"
   }
 }

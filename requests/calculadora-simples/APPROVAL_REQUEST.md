@@ -12,7 +12,7 @@
 | **Workload Slug** | `calculadora-simples` | Identificador isolado de GCS SPA, Cloud Run v2, Pub/Sub, DB lógico e TF State |
 | **Repositório da Aplicação** | `detran-automation-dev/calculadora-simples` | Branch `main` preservada 100% intocada |
 | **Branch & Tag de Deploy** | `gcp/sandbox` / **`GCP_DEPLOYED_VERSION`** | Checkout estrito na tag `GCP_DEPLOYED_VERSION` |
-| **Trava SHA Anti-Tampering** | `b013e907363cdd323f9e6601e6f8846f3963560b` | Abortará o deploy se `GCP_DEPLOYED_VERSION` divergir deste SHA |
+| **Trava SHA Anti-Tampering** | `9099121e92c334c3fecef0abd14fff107e966975` | Abortará o deploy se `GCP_DEPLOYED_VERSION` divergir deste SHA |
 | **Diff vs `main` (`ahead/behind`)** | [`1 ahead` / `0 behind` `main`](https://github.com/detran-automation-dev/calculadora-simples/compare/main...GCP_DEPLOYED_VERSION) | Visibilidade integral das alterações do Agente contra `main` |
 | **GCLB HTTPS + Redirect 301 (`.nip.io`)** | `https://calculadora-simples-frontend.<gclb_ip>.nip.io` (SPA GCS BackendBucket, zero container) / `https://calculadora-simples-backend.<gclb_ip>.nip.io` (BFF) / `https://calculadora-simples-api.<gclb_ip>.nip.io` (API) | Redirect HTTP->HTTPS `301` + Certificado SSL Certificate Manager + Cloud Armor WAF |
 | **Pub/Sub Isolado & Serverless** | `calculadora-simples-events`, `calculadora-simples-dlq` | Tópicos + DLQ isolados por projeto + suporte a Cloud Run Functions v2 |
@@ -24,13 +24,13 @@
 | **Tempo de Vida (`ttl`)** | **`1h` (60 minutos)** | Autodestruição automática dos workloads ao expirar o relógio |
 | **Modo de Descomissionamento** | `terraform_destroy_workload_only` | **Remove apenas os workloads e rotas GCLB da app**; preserva projeto `detran-gemini`, GCLB/DB singletons, `main` e repositório Git |
 | **Veredito Gatekeeper SARIF** | `PASS` | OWASP Top 10 + 5 Regras de Segurança IA/LGPD |
-| **Solicitante** | `wagner.silva@detran.sp.gov.br` | Registrado em `2026-11-20T03:12:19Z` |
+| **Solicitante** | `wagner.silva@detran.sp.gov.br` | Registrado em `2026-11-20T03:54:15Z` |
 
 ## 2. Justificativa Executiva / Negócio
 
-Republicação do app calculadora-simples em sandbox
+Evolução incremental Day-2: implementação de calculadora funcional com 4 operações básicas e histórico persistente
 
 ## 3. Como Aprovar ou Rejeitar
 
-- **Para Aprovar e Provisionar**: Inspecione o [Diff contra `main`](https://github.com/detran-automation-dev/calculadora-simples/compare/main...GCP_DEPLOYED_VERSION) e `ARCHITECTURE_REVIEW.md`, aprove e faça **Merge Pull Request** para `main`. As URLs HTTPS `.nip.io` (`frontend`, `backend`, `api`) e o link do Dashboard de SLOs/Troubleshooting serão publicados em `active-leases/calculadora-simples.json`.
+- **Para Aprovar e Provisionar**: Inspecione o [Diff contra `main`](https://github.com/detran-automation-dev/calculadora-simples/compare/main...GCP_DEPLOYED_VERSION) e `PRD.md`, aprove e faça **Merge Pull Request** para `main`. As URLs HTTPS `.nip.io` (`frontend`, `backend`, `api`) e o link do Dashboard de SLOs/Troubleshooting serão publicados em `active-leases/calculadora-simples.json`.
 - **Para Rejeitar**: Feche o PR sem merge (ou altere `approval_status` para `"REJECTED"`).
