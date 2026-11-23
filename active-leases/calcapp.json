@@ -1,7 +1,7 @@
 {
   "workload_slug": "calcapp",
   "short_slug": "calcapp",
-  "status": "ACTIVE",
+  "status": "DECOMMISSIONED",
   "target_gcp_project": "detran-gemini",
   "region": "southamerica-east1",
   "github_org": "detran-automation-dev",
@@ -19,7 +19,7 @@
   "enable_redis": false,
   "alert_emails": "lucas.cesario@detran.sp.gov.br",
   "monitoring_dashboard_url": "https://console.cloud.google.com/monitoring/dashboards/builder/projects/881857743262/dashboards/3041c4c7-ff64-4ef5-b8c6-9d01be8bd795?project=detran-gemini",
-  "budget_brl": 150.00,
+  "budget_brl": 150.0,
   "ttl": "1h",
   "ttl_minutes": 60,
   "deployed_at_utc": "2026-11-23T17:00:52Z",
@@ -33,5 +33,7 @@
   "bff_url": "https://calcapp-backend.136.81.199.254.nip.io",
   "api_url": "https://calcapp-api.136.81.199.254.nip.io",
   "teardown_mode": "terraform_destroy_workload_only",
-  "terraform_state_uri": "gs://detran-gemini-provisioning-tfstate/workloads/calcapp"
+  "terraform_state_uri": "gs://detran-gemini-provisioning-tfstate/workloads/calcapp",
+  "decommissioned_at_utc": "2026-11-23T18:10:34Z",
+  "decommissioned_reason": "TTL_EXPIRED (1h)"
 }
