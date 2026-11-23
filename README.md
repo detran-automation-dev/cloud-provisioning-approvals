@@ -26,3 +26,6 @@ Repositório central e auditável de aprovação humana (**Human-in-the-Loop**) 
 - Cada pedido processado fica em `lifecycle-requests/processed/` com o resultado (`APPLIED` ou `REJECTED`) e o histórico
   em `lifecycle_overrides` no lease.
 
+## Documentação Complementar de Governança
+
+- [Modelos de Aprovação de PRs & GitHub App `[bot]` (Four-Eyes Sem Bloqueio de Auto-Aprovação)](docs/GOVERNANCE_PR_APPROVAL_MODELS.md)
