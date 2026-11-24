@@ -12,7 +12,7 @@
 | **Workload Slug** | `keep-kanban-dti` | Identificador isolado de GCS SPA, Cloud Run v2, Pub/Sub, DB lógico e TF State |
 | **Repositório da Aplicação** | `detran-automation-dev/keep-kanban-dti` | Branch `main` preservada 100% intocada |
 | **Branch & Tag de Deploy** | `gcp/sandbox` / **`GCP_DEPLOYED_VERSION`** | Checkout estrito na tag `GCP_DEPLOYED_VERSION` |
-| **Trava SHA Anti-Tampering** | `dbdfd08c46d7be7d5a57cb1a20450895fffb9708` | Abortará o deploy se `GCP_DEPLOYED_VERSION` divergir deste SHA |
+| **Trava SHA Anti-Tampering** | `a5bde12740ffc1291cc23902eacadf33720f3622` | Abortará o deploy se `GCP_DEPLOYED_VERSION` divergir deste SHA |
 | **Diff vs `main` (`ahead/behind`)** | [`1 ahead` / `0 behind` `main`](https://github.com/detran-automation-dev/keep-kanban-dti/compare/main...GCP_DEPLOYED_VERSION) | Visibilidade integral das alterações do Agente contra `main` |
 | **GCLB HTTPS + Redirect 301 (`.nip.io`)** | `https://keep-kanban-dti-frontend.<gclb_ip>.nip.io` (SPA GCS BackendBucket, zero container) / `https://keep-kanban-dti-backend.<gclb_ip>.nip.io` (BFF) / `https://keep-kanban-dti-api.<gclb_ip>.nip.io` (API) | Redirect HTTP->HTTPS `301` + Certificado SSL Certificate Manager + Cloud Armor WAF |
 | **Pub/Sub Isolado & Serverless** | `keep-kanban-dti-events`, `keep-kanban-dti-dlq` | Tópicos + DLQ isolados por projeto + suporte a Cloud Run Functions v2 |
@@ -24,7 +24,7 @@
 | **Tempo de Vida (`ttl`)** | **`3h` (180 minutos)** | Autodestruição automática dos workloads ao expirar o relógio |
 | **Modo de Descomissionamento** | `terraform_destroy_workload_only` | **Remove apenas os workloads e rotas GCLB da app**; preserva projeto `detran-gemini`, GCLB/DB singletons, `main` e repositório Git |
 | **Veredito Gatekeeper SARIF** | `PASS` | OWASP Top 10 + 5 Regras de Segurança IA/LGPD |
-| **Solicitante** | `ernanimartins@google.com` | Registrado em `2026-11-24T13:17:06Z` |
+| **Solicitante** | `ernanimartins@google.com` | Registrado em `2026-11-24T13:41:09Z` |
 
 ## 2. Justificativa Executiva / Negócio
 
