@@ -6,8 +6,8 @@
   "solution_repo": "keep-kanban-dti",
   "git_branch": "gcp/sandbox",
   "git_tag": "GCP_DEPLOYED_VERSION",
-  "expected_commit_sha": "dbdfd08c46d7be7d5a57cb1a20450895fffb9708",
-  "source_commit_sha": "dbdfd08c46d7be7d5a57cb1a20450895fffb9708",
+  "expected_commit_sha": "a5bde12740ffc1291cc23902eacadf33720f3622",
+  "source_commit_sha": "a5bde12740ffc1291cc23902eacadf33720f3622",
   "commits_ahead_of_main": 1,
   "commits_behind_main": 0,
   "compare_against_main_url": "https://github.com/detran-automation-dev/keep-kanban-dti/compare/main...GCP_DEPLOYED_VERSION",
@@ -142,7 +142,7 @@
   "sarif_security_verdict": "PASS",
   "approval_status": "APPROVED_ON_MERGE",
   "requested_by": "ernanimartins@google.com",
-  "requested_at_utc": "2026-11-24T13:17:06Z",
+  "requested_at_utc": "2026-11-24T13:41:09Z",
   "business_justification": "Release homologado DETRAN-SP: Keep Post-Its + Kanban 2D promovido 1:1 do UI Staging v2 com TTL de 3h",
   "dti_standard_exception_justification": "",
   "agent_llm_models": {
@@ -265,8 +265,8 @@
       "teardown_mode",
       "sarif_security_verdict"
     ],
-    "canonical_payload_sha256": "537d874a40475866ac054c234edcfefaac0cb7de1a6e079722ccee7a22395cf6",
-    "companion_docs_sha256": "5ba4e9d064d78da80cf7370e17dd1a546a119d8972adc6a08b188171f28e5843",
-    "hmac_sha256_signature": "a5c32679b4001868170c99601aa1288ede68a81d5b138c897398871ced8e7bf9"
+    "canonical_payload_sha256": "59cc45b58e4badab487ec84925c27c2bb2bece82e2be047a7c2e765e5e68db0f",
+    "companion_docs_sha256": "554c6a0d244fc012f77d0aa34d7da6fe0e690343d80b251d618654c8089b179c",
+    "hmac_sha256_signature": "7771bb7119d0709b9f054a892fa8fa4180b6940166fdce991c158090c0e74151"
   }
 }
